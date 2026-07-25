@@ -6,7 +6,7 @@ The site is fully static — no server, no build step, no environment variables.
 ```
 site/
   index.html              THE CONSTELLATION — the front door
-  threads.html            the 2D fallback (mobile / no-WebGL2 / slow machines)
+  wall.html               the native grid (mobile / no-WebGL2 / slow machines)
   constellation.html      redirect stub, only for links shared before the rename
   vendor/three.r128.min.js
   data/                   portrait · cloud347 · sky · serials · eggs
@@ -34,9 +34,9 @@ Then open <http://localhost:8347>. It also runs straight from `file://` — open
 directory `site`, and cache headers (`vendor/` immutable for a year, `data/` a week,
 HTML always revalidated). Nothing outside `site/` gets served.
 
-`cleanUrls` is deliberately left off — it would 308 `/threads.html` to `/threads`,
+`cleanUrls` is deliberately left off — it would 308 `/wall.html` to `/wall`,
 adding a redirect hop to the mobile fallback, which is the slowest path we have.
-The only URLs that matter are `/` and `/threads.html`, so there is nothing to tidy.
+The only URLs that matter are `/` and `/wall.html`, so there is nothing to tidy.
 
 ### First deploy — do it via GitHub, not the CLI
 
@@ -130,7 +130,7 @@ Re-run `node bake-eggs.js` only when `drawings/` changed.
 
 ## Before you announce it
 
-- Open the real URL on a **phone** — you should land on `threads.html`, not a broken
+- Open the real URL on a **phone** — you should land on `wall.html`, not a broken
   3D scene.
 - Open it on a laptop and check the arrival resolves into Card 347.
 - Click any work → "read on 6529 ↗" should open that specific drop, not the homepage.

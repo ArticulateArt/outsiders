@@ -9,7 +9,7 @@ Static, single page, no server, no build step. It runs from `file://`.
 
     site/
       index.html      the constellation — the front door
-      threads.html    the 2D version (phones, no-WebGL2, slow machines)
+      wall.html       the native grid (phones, no-WebGL2, slow machines)
       data/           portrait · cloud347 · sky · serials · eggs
       vendor/         three.js r128, vendored so a CDN outage costs us nobody
 
@@ -53,6 +53,6 @@ See `DEPLOY.md`. Publish `site/` and nothing else.
 No counts, no leaderboards, no numbers. Light means someone paid attention.
 The founder is rendered exactly like everyone else. Serif only. Nothing
 demands to be clicked. ESC always escapes. No audio without being asked.
-The 2D fallback stays whole. Built for ten thousand works, not a hundred.
+The wall stays whole. Built for ten thousand works, not a hundred.
 
 See `HANDOVER.md` for what the site is and how the auto-refresh works.

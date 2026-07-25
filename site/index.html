@@ -118,7 +118,7 @@
   .hint{position:fixed;bottom:clamp(14px,2.2vw,20px);left:0;right:0;z-index:5;text-align:center;
     font-size:12px;font-style:italic;color:rgba(205,211,221,.42);text-shadow:0 1px 10px #000;pointer-events:none}
 
-  /* ─── the lightbox (matches threads.html, elevated) ─── */
+  /* ─── the lightbox (also used, single-column, on wall.html) ─── */
   #bloom{position:fixed;inset:0;z-index:10;display:none;opacity:0;transition:opacity .6s ease;
     align-items:center;justify-content:center;overflow:hidden}
   #bloom.on{display:flex;opacity:1}
@@ -293,7 +293,7 @@
 <div id="fade"></div>
 <div id="loading">gathering the witnessed…</div>
 
-<!-- ── the 2D field is canonical; the constellation only opens for capable machines ── -->
+<!-- ── the constellation is desktop-only; touch and non-WebGL2 devices get the wall ── -->
 <script>
 (function(){
   var ua = navigator.userAgent||"";
@@ -301,11 +301,10 @@
     (matchMedia && matchMedia("(pointer:coarse)").matches && Math.min(screen.width,screen.height) < 760);
   var gl2 = false;
   try { gl2 = !!document.createElement("canvas").getContext("webgl2"); } catch(e){}
-  /* no WebGL2 → the 2D field (canonical). capable touch devices now enter the 3D
-     constellation (gyroscope viewer); the runtime fps watchdog still hands weak
-     machines back to threads.html automatically. */
-  if (!gl2) { location.replace("threads.html"); }
-  else if (mobile) { document.documentElement.classList.add("touch"); }
+  /* touch devices get wall.html (a native grid) instead of a shrunk-down 3D scene;
+     machines without WebGL2 land there too. The runtime fps watchdog below still
+     hands weak desktop machines back to the wall automatically. */
+  if (!gl2 || mobile) { location.replace("wall.html"); }
 })();
 </script>
 
@@ -329,7 +328,7 @@
    ════════════════════════════════════════════════════════════════════ */
 
 function goFallback(){ var f=document.getElementById("fade"); f.classList.remove("gone"); f.classList.add("exit");
-  setTimeout(function(){ location.replace("threads.html"); }, 1200); }
+  setTimeout(function(){ location.replace("wall.html"); }, 1200); }
 
 if(!window.THREE || !window.PORTRAIT || !window.PORTRAIT.works){ goFallback(); return; }
 
@@ -545,7 +544,8 @@ var starMat=new THREE.ShaderMaterial({
     "  float d=-mv.z;\n"+
     "  float tw=.62+.38*sin(uT*(0.9+fract(aPhase)*1.1)+aPhase*3.7);\n"+
     "  float ig=smoothstep(0.,1.,clamp((uIgnite-aIgn)*3.,0.,1.));\n"+
-    "  gl_PointSize=clamp((15.+9.*tw)*(uPixH/720.)*(1150./max(d,70.)),3.,64.);\n"+
+    "  float sizeMul=1.0+clamp(aLit-1.0,0.,1.);\n"+              // a gathered person's OWN stars read unmistakably larger, not just brighter
+    "  gl_PointSize=clamp((15.+9.*tw)*(uPixH/720.)*(1150./max(d,70.))*sizeMul,3.,64.);\n"+
     "  vB=ig*(.55+.45*tw)*(.16+.84*aLit)+fall*uRayGlow;\n"+      // light pools where you look
     "  gl_Position=projectionMatrix*mv;\n"+
     "}",
@@ -1080,7 +1080,7 @@ addEventListener("pointerup",function(e){
   } else { setFocus(null); }                                     // touch the dark → release
 });
 
-/* ════════ LIGHTBOX — meeting someone (matches threads.html behaviour) ════════ */
+/* ════════ LIGHTBOX — meeting someone ════════ */
 var bloom=document.getElementById("bloom"), bsay=document.getElementById("bsay");
 var bwrapEl=document.getElementById("bwrap"), brel=document.getElementById("brel");
 var bhead=document.getElementById("bhead"), bwords=document.getElementById("bwords"), bfoot=document.getElementById("bfoot");
