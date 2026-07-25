@@ -5,10 +5,11 @@
 # somebody re-bakes by hand — which means the founder is in the data path, which
 # is the one thing the whole design is trying to avoid.
 #
-# So: once a day, crawl the wave, rebuild the portrait, and commit it. Vercel's
+# So: every 6 hours, crawl the wave, rebuild the portrait, and commit it. Vercel's
 # git integration sees the commit and redeploys. Nobody has to be told, nobody
 # has to be asked. A community member runs a workshop, uploads the photographs,
-# the community marks them, and by the next morning they are on the wall.
+# the community marks them, and within hours — certainly by the next morning —
+# they are on the wall.
 #
 # It needs no credentials. Everything it reads from 6529 is public.
 #
@@ -21,9 +22,10 @@ name: refresh the portrait
 
 on:
   schedule:
-    # 05:17 UTC daily. Off the hour on purpose — every other cron on earth fires
-    # at :00 and the 6529 API is someone else's server.
-    - cron: "17 5 * * *"
+    # Every 6 hours, on the :17 mark (05:17, 11:17, 17:17, 23:17 UTC). Off the
+    # hour on purpose — every other cron on earth fires at :00 and the 6529
+    # API is someone else's server.
+    - cron: "17 */6 * * *"
   workflow_dispatch:
     inputs:
       force:

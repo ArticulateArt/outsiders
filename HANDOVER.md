@@ -25,8 +25,8 @@ The site never talks to 6529 directly — `site/data/portrait.js` is a
 photograph of the wave. What keeps that photograph current is
 `.github/workflows/refresh-data.yml`:
 
-- Runs every morning at 05:17 UTC (and can be triggered by hand from the
-  Actions tab).
+- Runs every 6 hours (05:17, 11:17, 17:17, 23:17 UTC), and can be triggered
+  by hand from the Actions tab any time.
 - Crawls the wave, rebuilds `site/data/`, and commits the change if anything
   moved.
 - Vercel's git integration sees that commit and redeploys automatically.
