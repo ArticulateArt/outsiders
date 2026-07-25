@@ -1,0 +1,104 @@
+# The site's one moving part.
+#
+# OUTSIDERS is a static page: the wall is whatever `site/data/portrait.js` says
+# it is. Without this workflow, marking a work :outsiders: changes nothing until
+# somebody re-bakes by hand — which means the founder is in the data path, which
+# is the one thing the whole design is trying to avoid.
+#
+# So: once a day, crawl the wave, rebuild the portrait, and commit it. Vercel's
+# git integration sees the commit and redeploys. Nobody has to be told, nobody
+# has to be asked. A community member runs a workshop, uploads the photographs,
+# the community marks them, and by the next morning they are on the wall.
+#
+# It needs no credentials. Everything it reads from 6529 is public.
+#
+# If a crawl goes wrong, the run FAILS and commits nothing — producer.js refuses
+# to write when the chain of trust collapses or the portrait loses more than a
+# fifth of its works. A red run in this repo means "look at me", never "the wall
+# is broken".
+
+name: refresh the portrait
+
+on:
+  schedule:
+    # 05:17 UTC daily. Off the hour on purpose — every other cron on earth fires
+    # at :00 and the 6529 API is someone else's server.
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Ship even if the portrait shrinks sharply (only if you have checked why)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Crawl the wave and rebuild the portrait
+        id: bake
+        run: |
+          set -o pipefail
+          cd producer
+          node producer.js --live --diff ${{ inputs.force && '--force' || '' }} 2>&1 | tee ../bake.log
+
+      - name: Top up any missing 6529 permalinks
+        run: node producer/bake-serials.js
+
+      - name: Say what changed
+        run: |
+          {
+            echo '## The portrait, as of this run'
+            echo
+            echo '```'
+            # progress counters are carriage-return spam; keep the real lines
+            tr '\r' '\n' < bake.log \
+              | grep -E '^\s*(\[producer\]|\[roster\]|\+|-)' \
+              | grep -vE 'drops…|grant-log rows' || true
+            echo '```'
+            echo
+            if git diff --quiet -- site/data; then
+              echo '_Nothing changed. Nobody marked anything new._'
+            else
+              echo '_Committed and redeploying._'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit
+        run: |
+          if git diff --quiet -- site/data producer/fixtures/grants.json; then
+            echo "no change"
+            exit 0
+          fi
+          git config user.name  "the producer"
+          git config user.email "producer@outsiders.articulate.art"
+          git add site/data producer/fixtures/grants.json
+          # The subject line is what the founder reads in the repo's history, so
+          # it says who arrived, not "chore(data): update".
+          ADDED=$(tr '\r' '\n' < bake.log | grep -cE '^  \+ ' || true)
+          GONE=$(tr '\r' '\n' < bake.log | grep -cE '^  - ' || true)
+          if [ "$ADDED" -gt 0 ] || [ "$GONE" -gt 0 ]; then
+            SUBJECT="The wall changed: +${ADDED} witnessed, -${GONE} gone"
+          else
+            SUBJECT="Re-bake: attribution and permalinks only"
+          fi
+          {
+            echo "$SUBJECT"
+            echo
+            tr '\r' '\n' < bake.log | grep -E '^  [+-] ' || true
+          } > /tmp/msg
+          git commit -F /tmp/msg
+          git push

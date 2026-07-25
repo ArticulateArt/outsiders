@@ -1,0 +1,104 @@
+{
+  "_source": "GET /api/waves/{waveId}/drops — real response SHAPE, hand-built sample for offline logic tests",
+  "_note": "Mirrors the live drops feed exactly (embedded reactions with full profiles incl level; embedded reply_to.drop). Covers all 3 :outsiders: detection rules + exclusions. Handles/ids taken from the real recipients roster so witness-qualification resolves. NOT the real corpus — run `node producer.js --live` for that.",
+  "drops": [
+    {
+      "id": "work-selfmaker-photo",
+      "serial_no": 5000,
+      "author": { "id": "aeca6b7b-7c95-495b-b3ad-946c70d4d325", "handle": "AnaNovo", "level": 53 },
+      "parts": [ { "content": "My Freedom Towel out in the wild. Bringing it #outside.", "media": [ { "url": "https://d3lqz0a4bldqgf.cloudfront.net/drops/anovo/towel.jpeg", "mime_type": "image/jpeg" } ] } ],
+      "mentioned_users": [],
+      "reactions": [ { "reaction": ":outsiders:", "profiles": [ { "id": "d084ab7b-a9c8-4dff-97d5-42bacd035574", "handle": "Articulate", "level": 62 } ] } ]
+    },
+    {
+      "id": "work-curator-credits-maker",
+      "serial_no": 4900,
+      "author": { "id": "d084ab7b-a9c8-4dff-97d5-42bacd035574", "handle": "Articulate", "level": 62 },
+      "parts": [ { "content": "Adding these beautiful images by @[AnaNovo] so they get picked up by the OUTSIDERS experience.", "media": [ { "url": "https://d3lqz0a4bldqgf.cloudfront.net/drops/art/ana01.jpeg", "mime_type": "image/jpeg" } ] } ],
+      "mentioned_users": [ { "mentioned_profile_id": "aeca6b7b-7c95-495b-b3ad-946c70d4d325", "handle_in_content": "AnaNovo", "current_handle": "AnaNovo" } ],
+      "reactions": [ { "reaction": ":outsiders:", "profiles": [ { "id": "b0c4be70-59b2-4f39-a6fe-f03f90256f21", "handle": "dougfriesen", "level": 35 } ] } ]
+    },
+    {
+      "id": "work-multimaker-photo",
+      "serial_no": 4800,
+      "author": { "id": "d084ab7b-a9c8-4dff-97d5-42bacd035574", "handle": "Articulate", "level": 62 },
+      "parts": [ { "content": "A collaboration by @[serc] and @[Rocketgirl] and @[aida_studios] — outside together.", "media": [ { "url": "https://d3lqz0a4bldqgf.cloudfront.net/drops/art/collab.jpeg", "mime_type": "image/jpeg" } ] } ],
+      "mentioned_users": [
+        { "mentioned_profile_id": "34351997-1666-4fd5-93c4-464e120bd25d", "handle_in_content": "serc", "current_handle": "serc" },
+        { "mentioned_profile_id": "05b0a6b4-bdb9-41e0-a3d3-c6f1d7e0f7b6", "handle_in_content": "Rocketgirl", "current_handle": "Rocketgirl" },
+        { "mentioned_profile_id": "2b8db24f-9969-4030-8b86-740cc15ccdf3", "handle_in_content": "aida_studios", "current_handle": "aida_studios" }
+      ],
+      "reactions": [ { "reaction": ":outsiders:", "profiles": [ { "id": "d084ab7b-a9c8-4dff-97d5-42bacd035574", "handle": "Articulate", "level": 62 } ] } ]
+    },
+    {
+      "id": "reply-typed-outsiders",
+      "serial_no": 4700,
+      "author": { "id": "17f3a62c-f593-4c6f-bd19-383de3085eef", "handle": "PIRANSI", "level": 21 },
+      "parts": [ { "content": ":outsiders: love this one", "media": [] } ],
+      "mentioned_users": [],
+      "reactions": [],
+      "reply_to": {
+        "drop_id": "work-replied-to-A",
+        "drop": {
+          "id": "work-replied-to-A",
+          "serial_no": 4600,
+          "author": { "id": "caa10b81-aff4-4a03-8e84-fa5ea45bad43", "handle": "Paradigmstories", "level": 44 },
+          "parts": [ { "content": "My piece, outside at dawn.", "media": [ { "url": "https://d3lqz0a4bldqgf.cloudfront.net/drops/para/dawn.jpeg", "mime_type": "image/jpeg" } ] } ],
+          "mentioned_users": [],
+          "reactions": []
+        }
+      }
+    },
+    {
+      "id": "reply-reacted-outsiders",
+      "serial_no": 4650,
+      "author": { "id": "936d38da-a88b-4be2-8ab3-163e36ac9157", "handle": "Filthy", "level": 62 },
+      "parts": [ { "content": "so good", "media": [] } ],
+      "mentioned_users": [],
+      "reactions": [ { "reaction": ":outsiders:", "profiles": [ { "id": "75c20d94-1862-4d27-97c7-9051dc6473af", "handle": "Naime", "level": 50 } ] } ],
+      "reply_to": {
+        "drop_id": "work-replied-to-B",
+        "drop": {
+          "id": "work-replied-to-B",
+          "serial_no": 4550,
+          "author": { "id": "99f87fcd-23a0-4cb4-99e4-7c8245925e1c", "handle": "walasavagephoto", "level": 37 },
+          "parts": [ { "content": "Street shot.", "media": [ { "url": "https://d3lqz0a4bldqgf.cloudfront.net/drops/wala/street.jpeg", "mime_type": "image/jpeg" } ] } ],
+          "mentioned_users": [],
+          "reactions": []
+        }
+      }
+    },
+    {
+      "id": "work-outsider-proxy-tag",
+      "serial_no": 4450,
+      "author": { "id": "d084ab7b-a9c8-4dff-97d5-42bacd035574", "handle": "Articulate", "level": 62 },
+      "parts": [ { "content": "Sharing this beautiful piece by an artist not yet on 6529, on behalf of @[MemesOutside].", "media": [ { "url": "https://d3lqz0a4bldqgf.cloudfront.net/drops/art/outsider.jpeg", "mime_type": "image/jpeg" } ] } ],
+      "mentioned_users": [ { "mentioned_profile_id": "1aa020d3-5948-4607-b883-679e60bf7bec", "handle_in_content": "MemesOutside", "current_handle": "MemesOutside" } ],
+      "reactions": [ { "reaction": ":outsiders:", "profiles": [ { "id": "d084ab7b-a9c8-4dff-97d5-42bacd035574", "handle": "Articulate", "level": 62 } ] } ]
+    },
+    {
+      "id": "excluded-xlink-only",
+      "serial_no": 4400,
+      "author": { "id": "17f3a62c-f593-4c6f-bd19-383de3085eef", "handle": "PIRANSI", "level": 21 },
+      "parts": [ { "content": "Shared it here https://x.com/piransi/status/123 come see", "media": [] } ],
+      "mentioned_users": [],
+      "reactions": [ { "reaction": ":outsiders:", "profiles": [ { "id": "d084ab7b-a9c8-4dff-97d5-42bacd035574", "handle": "Articulate", "level": 62 } ] } ]
+    },
+    {
+      "id": "excluded-unqualified-witness",
+      "serial_no": 4300,
+      "author": { "id": "aeca6b7b-7c95-495b-b3ad-946c70d4d325", "handle": "AnaNovo", "level": 53 },
+      "parts": [ { "content": "another one outside", "media": [ { "url": "https://d3lqz0a4bldqgf.cloudfront.net/drops/anovo/two.jpeg", "mime_type": "image/jpeg" } ] } ],
+      "mentioned_users": [],
+      "reactions": [ { "reaction": ":outsiders:", "profiles": [ { "id": "nobody-not-on-roster-000", "handle": "randomfan", "level": 3 } ] } ]
+    },
+    {
+      "id": "excluded-wrong-emoji",
+      "serial_no": 4200,
+      "author": { "id": "aeca6b7b-7c95-495b-b3ad-946c70d4d325", "handle": "AnaNovo", "level": 53 },
+      "parts": [ { "content": "hello", "media": [ { "url": "https://d3lqz0a4bldqgf.cloudfront.net/drops/anovo/three.jpeg", "mime_type": "image/jpeg" } ] } ],
+      "mentioned_users": [],
+      "reactions": [ { "reaction": ":heart:", "profiles": [ { "id": "d084ab7b-a9c8-4dff-97d5-42bacd035574", "handle": "Articulate", "level": 62 } ] } ]
+    }
+  ]
+}

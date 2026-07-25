@@ -1,0 +1,17 @@
+.DS_Store
+node_modules/
+package-lock.json
+
+# local preview harness output (WebGL frame grabs)
+.preview/
+
+# producer run log (the refresh workflow writes it here to build its summary)
+bake.log
+
+# Affinity Designer sources + their lock files — huge binaries, not needed to build
+drawings/SVG edits/
+*.af
+*.af~lock~
+
+# founder feedback screen-recordings — kept on disk, far too large to version
+recordings/

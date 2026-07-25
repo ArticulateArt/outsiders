@@ -1,0 +1,16 @@
+{
+  "_note": "Founder hand-curation, applied on EVERY bake (live or offline) after attribution, before layout. Keyed by drop id. Only the fields present are overridden. makers:[] => 'an outsider' (creator not on 6529; credited to witness only). Add/edit rows here so corrections survive re-crawls.",
+  "_curated": "2026-07-05",
+  "overrides": {
+    "055a81a4-1b2d-4272-bbfa-ba968fd7b3fb": { "makers": ["dsanchesGM"], "review": false },
+    "0c2b9acd-0365-4134-b2e7-6c3135f21183": { "makers": ["dsanchesGM"], "review": false },
+    "c182c701-38bd-4db3-b1b8-b8b5a1033a57": { "makers": ["dsanchesGM"], "review": false },
+    "b24d63b9-ff8d-426c-8bfe-87e57a7752e5": { "makers": ["dougfriesen"], "review": false },
+    "efd06fa3-84e1-47a6-b09b-9c83b3f28f9a": { "makers": ["dougfriesen"], "review": false },
+    "61a7fd96-82a5-479c-95b6-bf83a6b0b80f": { "makers": [], "review": false, "note": "tmfa — not on 6529; witnessed by Articulate" },
+    "c2e6bab5-0759-46ac-93b6-1409b8b25cab": { "makers": [], "review": false, "note": "Art Blocks — not on 6529; witnessed by Articulate" },
+    "1cdde029-65b1-4541-8a11-fa93a95d80b1": { "makers": [], "review": true, "note": "not Articulate — creator TBD" },
+    "5707998b-6f32-4cd2-9f4a-eaf5f0c17a35": { "makers": [], "review": true, "note": "from X; may include GT Sewell — verify" },
+    "ebb492f2-d963-4e1f-ad30-f4fe959aad1d": { "makers": [], "review": true, "note": "not Articulate — creator TBD" }
+  }
+}
