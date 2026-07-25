@@ -157,7 +157,7 @@
 
 <div id="loading">gathering the witnessed…</div>
 
-<!-- baked data (plain scripts, same contract index.html and the producer share) -->
+<!-- baked data (plain scripts, same contract immersive.html and the producer share) -->
 <script src="data/portrait.js"></script>
 <script src="data/serials.js"></script>
 <script>
@@ -178,7 +178,7 @@ if(!d||!d.works){ document.getElementById("loading").textContent="portrait data 
 var WORKS=d.works;
 function relatedTo(w,k){ return WORKS.filter(function(x){ return x!==w && (k.test(w,x)||k.test(x,w)); }); }
 
-/* same three kinds, same wording, as site/index.html's KINDS — the founder already
+/* same three kinds, same wording, as site/immersive.html's KINDS — the founder already
    signed off on this copy for the desktop experience */
 var KINDS=[
   { key:"hand",   chipLabel:"their hand",    panelTitle:"the same hand",
@@ -195,7 +195,7 @@ function shuffled(arr){ var a=arr.slice();
   return a; }
 var SHUFFLED=shuffled(WORKS);
 
-/* ════════ YOUR GALLERY — kept works; same localStorage schema as index.html ════════ */
+/* ════════ YOUR GALLERY — kept works; same localStorage schema as immersive.html ════════ */
 var KEPT=(function(){ try{ return JSON.parse(localStorage.getItem("outsiders_kept")||"[]"); }catch(e){ return []; } })();
 function keptSave(){ try{ localStorage.setItem("outsiders_kept",JSON.stringify(KEPT)); }catch(e){} }
 function isKept(w){ return KEPT.indexOf(w.drop)>=0; }

@@ -1,0 +1,1887 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OUTSIDERS — The Immersive Constellation</title>
+<style>
+  /* ─── CUTTLEFISH "ARTICULATE" PALETTE (swap here to re-theme) ─── */
+  :root{
+    --bg:#0c1014; --bg2:#1B2329; --canvas:#CDD3DD; --text:#C2CBEA; --muted:#8C7C30;
+    --a-red:#A14E4A; --a-green:#4E7B5E; --a-khaki:#C3BD8E; --a-peri:#8A9BD0; --a-gold:#8C7C30;
+    --serif:"Georgia","Times New Roman",serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg)}
+  body{font-family:var(--serif);color:var(--text);-webkit-font-smoothing:antialiased}
+  #sky{position:fixed;inset:0;display:block;cursor:grab;touch-action:none}
+  #sky.drag{cursor:grabbing}
+
+  /* black veil for arrival + graceful exits */
+  #fade{position:fixed;inset:0;background:#05070a;z-index:40;pointer-events:none;opacity:1;transition:opacity 2.2s ease}
+  #fade.gone{opacity:0}
+  #fade.exit{transition:opacity 1.4s ease;opacity:1;pointer-events:all}
+
+  /* tonight's sky */
+  #skytoggle{position:fixed;right:clamp(18px,3.4vw,44px);bottom:clamp(16px,2.4vw,24px);z-index:6;
+    font-style:italic;font-size:14px;color:rgba(194,203,234,.55);cursor:pointer;pointer-events:auto;
+    text-shadow:0 1px 12px #000;transition:color .35s;user-select:none}
+  #skytoggle:hover{color:#fff}
+
+  /* quiet opt-ins, bottom-left: the rain (audio) and the phone's eyes (gyro) */
+  #quiet{position:fixed;left:clamp(18px,3.4vw,44px);bottom:clamp(16px,2.4vw,24px);z-index:6;
+    display:flex;flex-direction:column;gap:9px;align-items:flex-start}
+  #audiotoggle,#gyrotoggle,#galtoggle{font-style:italic;font-size:14px;color:rgba(194,203,234,.55);
+    cursor:pointer;pointer-events:auto;text-shadow:0 1px 12px #000;transition:color .35s;user-select:none}
+  #audiotoggle:hover,#gyrotoggle:hover,#galtoggle:hover{color:#fff}
+  #gyrotoggle{display:none}
+  html.touch #gyrotoggle{display:block}
+  .skylabel{position:fixed;z-index:4;pointer-events:none;font-size:10.5px;letter-spacing:.3em;
+    text-transform:uppercase;color:rgba(138,155,208,.34);text-shadow:0 1px 10px #000;white-space:nowrap;
+    transform:translate(-50%,-50%)}
+
+  #loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:41;
+    font-style:italic;color:rgba(205,211,221,.6);transition:opacity .8s ease}
+  #loading.gone{opacity:0;pointer-events:none}
+
+  /* HUD fades in after the arrival beat */
+  .hud{opacity:0;transition:opacity 1.8s ease}
+  body.arrived .hud{opacity:1}
+
+  .frame{position:fixed;z-index:5;pointer-events:none}
+  /* the welcome holds the centre — the field waits behind it. first touch sends it to the corner */
+  .frame.tl{top:44%;left:50%;transform:translate(-50%,-50%);max-width:46ch;text-align:center;
+    transition:top 1.1s ease,left 1.1s ease,transform 1.1s ease,max-width 1.1s ease}
+  body.explored .frame.tl{top:clamp(18px,3.4vw,34px);left:clamp(20px,4vw,52px);transform:translate(0,0);
+    max-width:36ch;text-align:left}
+  #searchwrap{margin-left:auto;margin-right:auto}
+  body.explored #searchwrap{margin-left:0}
+  .eyebrow{font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--muted);margin:0 0 .5em;
+    text-shadow:0 1px 14px #000}
+  .lede{font-size:clamp(15px,1.5vw,18px);line-height:1.5;color:var(--text);margin:0;font-style:italic;
+    text-shadow:0 1px 16px #000}
+
+  /* landing search */
+  #searchwrap{position:relative;margin-top:16px;pointer-events:auto;max-width:30ch}
+  #search{width:100%;background:rgba(12,16,20,.35);border:none;border-bottom:1px solid rgba(195,189,142,.35);
+    color:#fff;font-family:var(--serif);font-style:italic;font-size:15px;padding:7px 2px;outline:none;
+    transition:border-color .4s}
+  #search::placeholder{color:rgba(194,203,234,.4);font-style:italic}
+  #search:focus{border-color:rgba(195,189,142,.8)}
+  #ac{position:absolute;left:0;right:0;top:100%;z-index:9;margin-top:4px;display:none;
+    background:rgba(10,13,17,.92);border:1px solid rgba(205,211,221,.12);border-radius:6px;overflow:hidden;
+    backdrop-filter:blur(6px)}
+  #ac.on{display:block}
+  #ac .it{padding:7px 12px;font-style:italic;font-size:14px;color:rgba(205,211,221,.85);cursor:pointer}
+  #ac .it .who{font-style:normal;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-left:9px}
+  #ac .it:hover,#ac .it.sel{background:rgba(195,189,142,.12);color:#fff}
+
+  /* right-margin menu — relational, context-sensitive */
+  #threads{position:fixed;z-index:6;right:clamp(18px,3.4vw,44px);top:50%;transform:translateY(-50%);
+    display:flex;flex-direction:column;gap:14px;text-align:right;max-width:24ch;pointer-events:none}
+  #threads .lbl{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:rgba(140,124,48,.75);
+    margin-bottom:2px;text-shadow:0 1px 12px #000}
+  #threads .who{font-style:italic;font-size:clamp(15px,1.5vw,18px);color:#fff;text-shadow:0 1px 12px #000;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #threads .conname{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;
+    color:rgba(140,124,48,.85);margin-top:3px;text-shadow:0 1px 10px #000}
+  #threads .rest{font-style:italic;font-size:13.5px;color:rgba(194,203,234,.5);text-shadow:0 1px 12px #000;line-height:1.55}
+  #threads .kt{font-style:italic;font-size:clamp(14px,1.4vw,16.5px);color:rgba(194,203,234,.44);
+    cursor:pointer;pointer-events:auto;transition:color .35s ease;text-shadow:0 1px 12px #000;white-space:nowrap;user-select:none}
+  #threads .kt:hover{color:rgba(205,211,221,.9)}
+  #threads .kt.on{color:#fff}
+  #threads .kt .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-left:9px;
+    vertical-align:middle;background:currentColor;box-shadow:0 0 9px 1px currentColor;opacity:.5;transition:opacity .35s}
+  #threads .kt.on .dot{opacity:1}
+  #threads .kin{margin-top:4px;display:flex;flex-direction:column;gap:7px;align-items:flex-end}
+  #threads .kin .kn{display:flex;align-items:center;gap:9px;cursor:pointer;pointer-events:auto;max-width:100%}
+  #threads .kin .kn img{width:36px;height:36px;object-fit:cover;border-radius:5px;flex:0 0 auto;
+    border:1px solid rgba(205,211,221,.14);transition:border-color .3s,box-shadow .3s}
+  #threads .kin .kn:hover img{border-color:rgba(212,190,120,.6);box-shadow:0 0 14px rgba(212,190,120,.2)}
+  #threads .kin .kn .nm{font-style:italic;font-size:13px;color:rgba(205,211,221,.6);transition:color .3s;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;order:-1}
+  #threads .kin .kn:hover .nm{color:#fff}
+  #threads .kin .more{font-style:italic;font-size:13px;color:rgba(194,203,234,.35)}
+
+  /* snippets — works surfacing inside their fireflies' glow as you draw near */
+  #snips{position:fixed;inset:0;z-index:3;pointer-events:none}
+  #snips img{position:absolute;transform:translate(-50%,-50%);border-radius:50%;object-fit:cover;
+    opacity:0;transition:opacity .7s ease;mix-blend-mode:screen;filter:saturate(.85) brightness(.92);
+    -webkit-mask-image:radial-gradient(circle,#000 24%,transparent 62%);
+    mask-image:radial-gradient(circle,#000 24%,transparent 62%)}
+
+  #tip{position:fixed;z-index:8;pointer-events:none;opacity:0;transition:opacity .15s;
+    transform:translate(-50%,-160%);font-style:italic;font-size:14px;color:#fff;text-shadow:0 1px 10px #000;
+    white-space:nowrap;text-align:center}
+  #tip .b{display:block;font-size:11px;color:var(--a-khaki);font-style:italic;margin-top:2px}
+
+  .hint{position:fixed;bottom:clamp(14px,2.2vw,20px);left:0;right:0;z-index:5;text-align:center;
+    font-size:12px;font-style:italic;color:rgba(205,211,221,.42);text-shadow:0 1px 10px #000;pointer-events:none}
+
+  /* ─── the lightbox (also used, single-column, on wall.html) ─── */
+  #bloom{position:fixed;inset:0;z-index:10;display:none;opacity:0;transition:opacity .6s ease;
+    align-items:center;justify-content:center;overflow:hidden}
+  #bloom.on{display:flex;opacity:1}
+  #bloom .veilbg{position:absolute;inset:0;backdrop-filter:blur(9px);background:
+    radial-gradient(58% 58% at 50% 46%, rgba(64,52,22,.5), rgba(8,11,14,.86) 58%, rgba(6,8,11,.97)),rgba(6,8,11,.4)}
+  #bloom .mote{position:absolute;width:5px;height:5px;border-radius:50%;pointer-events:none;z-index:1;filter:blur(.3px);
+    background:radial-gradient(circle,rgba(255,247,222,.95),rgba(212,190,120,0));animation:drift linear infinite}
+  @keyframes drift{0%{transform:translate(0,0)}50%{transform:translate(16px,-26px)}100%{transform:translate(0,0)}}
+  /* BOTH columns are fixed boxes, so nothing moves as you walk from work to work.
+     Sizing the picture column to each image made the whole pair re-centre on every
+     navigation — a portrait shot and a panorama gave completely different layouts.
+     The stage is square-ish because the works run 0.56–1.50 in aspect, half of them
+     portrait, so a square wastes the least on average. Letterbox inside it instead. */
+  .bwrap{position:relative;z-index:2;display:flex;align-items:stretch;gap:clamp(24px,4vw,56px);
+    width:auto;max-width:96vw;height:min(62vh,560px);animation:bloomin .7s cubic-bezier(.2,.7,.2,1) both}
+  @keyframes bloomin{from{opacity:0;transform:translateY(14px) scale(.965)}to{opacity:1;transform:none}}
+  .bpic{position:relative;flex:0 0 min(48vw,560px);height:100%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px}
+  .bpic::before{content:"";position:absolute;inset:-15%;border-radius:50%;z-index:-1;filter:blur(6px);
+    background:radial-gradient(circle,rgba(255,240,205,.33),rgba(212,190,120,0) 70%);animation:breathe 6s ease-in-out infinite}
+  @keyframes breathe{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+  /* the work sits calmer inline than it used to (was 52vw/76vh, which fought the words
+     for the eye); the whole thing is one click away in #bzoom */
+  .bpic img{display:block;max-width:100%;max-height:calc(100% - 22px);object-fit:contain;border-radius:7px;cursor:zoom-in;
+    box-shadow:0 40px 120px rgba(0,0,0,.7),0 0 0 1px rgba(212,190,120,.28);animation:floaty 7s ease-in-out infinite}
+  .bpic .zhint{font-style:italic;font-size:11.5px;letter-spacing:.03em;color:transparent;
+    transition:color .45s ease;pointer-events:none;user-select:none}
+  .bpic:hover .zhint{color:rgba(194,203,234,.42)}
+  /* full-size look at the work itself */
+  #bzoom{position:fixed;inset:0;z-index:30;display:none;opacity:0;transition:opacity .35s ease;
+    align-items:center;justify-content:center;background:rgba(4,6,9,.93);cursor:zoom-out}
+  #bzoom.on{display:flex;opacity:1}
+  #bzoom img{max-width:95vw;max-height:95vh;object-fit:contain;border-radius:4px;
+    box-shadow:0 30px 90px rgba(0,0,0,.8),0 0 0 1px rgba(212,190,120,.22)}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  /* ONE column: a head that never moves, a page that changes, a footer that stays put. */
+  .bmeta{flex:0 0 min(44ch,40vw);min-width:0;height:100%;display:flex;flex-direction:column;
+    text-shadow:0 1px 18px rgba(6,8,11,.95)}
+  .bhead,.bfoot{flex:0 0 auto}
+  .bmeta .eyebrow2{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--a-khaki);margin:0 0 .5em;opacity:.85}
+  .bmeta .maker{font-size:clamp(28px,3.6vw,44px);line-height:1.03;color:#fff;font-style:italic;font-weight:400;margin:0 0 .45em}
+  /* The page area is the only thing that scrolls, and it is capped — so a three-word
+     entry and a thousand-word one have the same silhouette. Before this, .bmeta had no
+     height at all and long text ran off the bottom of a clipped overlay, unreachable. */
+  .bpage{position:relative;flex:0 1 auto;min-height:0;display:flex;flex-direction:column}
+  .bmeta .words{flex:1 1 auto;min-height:0;overflow-y:auto;font-size:clamp(15px,1.5vw,17px);line-height:1.7;
+    color:rgba(255,255,255,.9);font-style:italic;white-space:pre-line;padding-left:16px;
+    border-left:1px solid rgba(212,190,120,.4);margin:0}
+  /* only fade the edge when there is actually more to reach (set from JS) */
+  .bmeta .words.scrolls{-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 30px),transparent 100%);
+    mask-image:linear-gradient(to bottom,#000 calc(100% - 30px),transparent 100%)}
+  .bmeta .words::-webkit-scrollbar,.brel::-webkit-scrollbar{width:7px}
+  .bmeta .words::-webkit-scrollbar-thumb,.brel::-webkit-scrollbar-thumb{background:rgba(205,211,221,.16);border-radius:9px}
+  /* the three threads, in the field menu's own grammar — quiet italic + a coloured dot,
+     one line that cannot wrap (the old bordered pills wrapped to three ragged rows) */
+  .bmeta .threads2{margin:18px 0 0;display:flex;align-items:baseline;gap:clamp(11px,1.5vw,19px);
+    flex-wrap:nowrap;white-space:nowrap}
+  .bmeta .threads2 .lead{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:rgba(194,203,234,.42)}
+  .bmeta .kt2{cursor:pointer;font-style:italic;font-size:14px;color:rgba(194,203,234,.55);transition:color .3s ease;user-select:none}
+  .bmeta .kt2:hover{color:rgba(205,211,221,.95)} .bmeta .kt2.on{color:#fff}
+  .bmeta .kt2 .cdot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:7px;
+    vertical-align:middle;background:currentColor;box-shadow:0 0 8px 1px currentColor;opacity:.5;transition:opacity .3s}
+  .bmeta .kt2:hover .cdot,.bmeta .kt2.on .cdot{opacity:1}
+  .bmeta .seal{margin:17px 0 0;font-size:12.5px;color:rgba(205,211,221,.78);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .bmeta .seal b{color:#fff;font-weight:400} .bmeta .seal .sep{opacity:.4}
+  .bmeta .seal a{color:var(--a-khaki);text-decoration:none;border-bottom:1px solid rgba(212,190,120,.3);padding-bottom:1px}
+  /* a private shelf, not a control — so it must not look like the threads above it */
+  .bmeta .keep{margin:11px 0 0;width:fit-content;font-style:italic;font-size:12.5px;
+    color:rgba(194,203,234,.4);cursor:pointer;transition:color .35s ease;user-select:none}
+  .bmeta .keep:hover{color:rgba(205,211,221,.9)}
+  /* the kin page — takes the words' place rather than adding a column */
+  .brel{display:none;flex:1 1 auto;min-height:0;overflow-y:auto;animation:relin .45s ease both}
+  .bmeta.showrel .words{display:none} .bmeta.showrel .brel{display:block}
+  @keyframes relin{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+  .brel .rhead{font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--a-khaki);
+    margin:0 0 11px;position:sticky;top:0;background:linear-gradient(rgba(9,11,14,.97),rgba(9,11,14,.72));padding:1px 0 8px;z-index:2}
+  .rrow{display:flex;align-items:center;gap:12px;padding:4px 0;cursor:pointer}
+  .rrow img{width:46px;height:46px;flex:0 0 auto;object-fit:cover;border-radius:5px;background:#11161b;
+    border:1px solid rgba(205,211,221,.12);transition:border-color .3s,box-shadow .3s}
+  .rrow .rn{font-style:italic;font-size:13.5px;line-height:1.45;color:rgba(205,211,221,.6);transition:color .3s;
+    overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .rrow:hover img{border-color:rgba(212,190,120,.6);box-shadow:0 0 14px rgba(212,190,120,.2)}
+  .rrow:hover .rn{color:#fff}
+  .brel .rmore{font-style:italic;font-size:12.5px;color:rgba(194,203,234,.34);margin:10px 0 0}
+  .bclose{position:absolute;top:clamp(16px,3vw,30px);left:clamp(18px,4vw,46px);z-index:5;color:rgba(205,211,221,.75);
+    font-size:12.5px;letter-spacing:.06em;cursor:pointer;transition:color .3s}
+  .bclose:hover{color:#fff}
+  /* ─── your gallery — the works you chose to keep, side by side ─── */
+  #gallery{position:fixed;inset:0;z-index:12;display:none;opacity:0;transition:opacity .5s ease;overflow-y:auto}
+  #gallery.on{display:block;opacity:1}
+  #gallery .gbg{position:fixed;inset:0;background:
+    radial-gradient(58% 58% at 50% 40%, rgba(40,34,16,.35), rgba(6,8,11,.9) 60%, rgba(6,8,11,.97))}
+  #gallery .gin{position:relative;max-width:1280px;margin:0 auto;padding:92px clamp(18px,4vw,54px) 100px}
+  #gallery h2{font-style:italic;font-weight:400;font-size:clamp(23px,2.7vw,31px);color:#fff;margin:0 0 4px}
+  #gallery .gsub{font-style:italic;font-size:13.5px;color:rgba(194,203,234,.55);margin:0 0 30px}
+  #ggrid{columns:280px 4;column-gap:22px}
+  #ggrid .gt{break-inside:avoid;margin:0 0 22px;position:relative;border-radius:7px;overflow:hidden;
+    cursor:pointer;background:#11161b;border:1px solid rgba(205,211,221,.1);
+    transition:border-color .3s,box-shadow .3s}
+  #ggrid .gt:hover{border-color:rgba(212,190,120,.55);box-shadow:0 0 26px rgba(212,190,120,.16)}
+  #ggrid .gt img{width:100%;display:block}
+  #ggrid .gt .gn{position:absolute;left:0;right:0;bottom:0;padding:20px 10px 8px;font-style:italic;
+    font-size:12.5px;color:#fff;background:linear-gradient(transparent,rgba(6,8,11,.88));
+    opacity:0;transition:opacity .3s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #ggrid .gt:hover .gn{opacity:1}
+  #gallery .gclose{position:fixed;top:clamp(16px,3vw,30px);left:clamp(18px,4vw,46px);z-index:2;
+    color:rgba(205,211,221,.75);font-size:12.5px;letter-spacing:.06em;cursor:pointer;transition:color .3s}
+  #gallery .gclose:hover{color:#fff}
+
+  @media(max-width:820px){ .bwrap{flex-direction:column;align-items:center;gap:16px;overflow:auto;
+      padding:64px 18px;width:94vw;height:auto;max-height:92vh}
+    .bpic{flex:0 0 auto;height:auto} .bpic img{max-width:88vw;max-height:38vh} .bpic .zhint{display:none}
+    .bmeta{flex:0 0 auto;width:100%;height:auto} .bpage{max-height:32vh} }
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+
+<div class="frame tl hud">
+  <p class="eyebrow">OUTSIDERS · The Constellation</p>
+  <p class="lede">Every light is a work someone witnessed. Search for a name, or click behind to explore yourself.</p>
+  <div id="searchwrap">
+    <input id="search" type="text" autocomplete="off" spellcheck="false" placeholder="find a name…" aria-label="find a name">
+    <div id="ac"></div>
+  </div>
+</div>
+
+<div id="snips"></div>
+<div id="threads" class="hud"></div>
+<div id="tip"></div>
+<div class="hint hud">W A S D to fly · space rises, shift sinks · drag to look around · esc brings you home · click a light to meet someone</div>
+
+<div id="bloom">
+  <div class="veilbg"></div>
+  <span class="bclose" id="bclose">✕&nbsp; back to the dark</span>
+  <!-- Two columns, always. The kin list is not a third column — it takes over the page
+       area in place of the maker's words, so the image never moves and the width never
+       changes while you are reading. -->
+  <div class="bwrap" id="bwrap">
+    <div class="bpic">
+      <img id="bimg" referrerpolicy="no-referrer" alt="">
+      <span class="zhint">click to see it whole</span>
+    </div>
+    <div class="bmeta" id="bsay">
+      <div class="bhead" id="bhead"></div>
+      <div class="bpage">
+        <div class="words" id="bwords"></div>
+        <div class="brel" id="brel"></div>
+      </div>
+      <div class="bfoot" id="bfoot"></div>
+    </div>
+  </div>
+</div>
+<div id="bzoom"><img id="bzimg" referrerpolicy="no-referrer" alt=""></div>
+<div id="gallery">
+  <div class="gbg"></div>
+  <span class="gclose" id="gclose">✕&nbsp; back to the dark</span>
+  <div class="gin">
+    <h2>your gallery</h2>
+    <p class="gsub">the works you chose to keep — yours to look at, side by side</p>
+    <div id="ggrid"></div>
+  </div>
+</div>
+<div id="skytoggle" class="hud">⋆&nbsp; tonight's sky</div>
+<div id="quiet" class="hud">
+  <div id="gyrotoggle">✧&nbsp; look with your phone</div>
+  <div id="audiotoggle">♪&nbsp; let it rain</div>
+  <div id="galtoggle">⬡&nbsp; your gallery</div>
+</div>
+<div id="skylabels"></div>
+
+<div id="fade"></div>
+<div id="loading">gathering the witnessed…</div>
+
+<!-- ── the constellation is desktop-only; touch and non-WebGL2 devices get the wall ── -->
+<script>
+(function(){
+  var ua = navigator.userAgent||"";
+  var mobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua) ||
+    (matchMedia && matchMedia("(pointer:coarse)").matches && Math.min(screen.width,screen.height) < 760);
+  var gl2 = false;
+  try { gl2 = !!document.createElement("canvas").getContext("webgl2"); } catch(e){}
+  /* touch devices get wall.html (a native grid) instead of a shrunk-down 3D scene;
+     machines without WebGL2 land there too. The runtime fps watchdog below still
+     hands weak desktop machines back to the wall automatically. */
+  if (!gl2 || mobile) { location.replace("wall.html"); }
+})();
+</script>
+
+<!-- baked data + baked portrait raster (plain scripts so everything runs on file://) -->
+<!-- three.js r128 is vendored rather than pulled from a CDN: the site is meant to be
+     static and to run from file://, and a third-party host going down (or being blocked)
+     would otherwise drop every visitor to the 2D fallback. -->
+<script src="vendor/three.r128.min.js"></script>
+<script src="data/portrait.js"></script>
+<script src="data/cloud347.js"></script>
+<script src="data/sky.js"></script>
+<script src="data/serials.js"></script>
+<script src="data/eggs.js"></script>
+<script>
+(function(){
+"use strict";
+
+/* ════════════════════════════════════════════════════════════════════
+   OUTSIDERS · The Constellation
+   Light = attention. No counts, no leaderboards, no privileged node.
+   ════════════════════════════════════════════════════════════════════ */
+
+function goFallback(){ var f=document.getElementById("fade"); f.classList.remove("gone"); f.classList.add("exit");
+  setTimeout(function(){ location.replace("wall.html"); }, 1200); }
+
+if(!window.THREE || !window.PORTRAIT || !window.PORTRAIT.works){ goFallback(); return; }
+
+var WAVE_ID="815542b5-e8a5-4380-b825-5823a91c4c71";        // "Outsiders Rep Grant Submissions" wave
+var DROP_SERIALS=window.DROP_SERIALS||{};                  // {dropId:serial_no} — data/serials.js (complete; unknown ids fall back)
+function dropUrl(w){ var s=w&&DROP_SERIALS[w.drop];        // per-work permalink; graceful homepage fallback
+  return s? "https://6529.io/my-stream?wave="+WAVE_ID+"&serialNo="+s : "https://6529.io"; }
+var css=getComputedStyle(document.documentElement);
+var PAL=function(k){ return (css.getPropertyValue(k).trim()||"#C3BD8E"); };
+
+/* ── world constants ── */
+var WORLD_W=1600, WORLD_H=1067;          // the portrait's frame in world units
+var D_VANTAGE=1320;                      // camera distance at which Card 347 resolves
+var VANTAGE=new THREE.Vector3(0,0,D_VANTAGE);
+var STAR_Z_MIN=-1300, STAR_Z_SPAN=1600;  // stars live THROUGH the whole deep cloud — community embedded in the colour
+var CLOUD_Z_NEAR=380, CLOUD_Z_SPAN=2200; // LEGACY — cloud body now maps onto the star sphere (see buildCloud SC/SR); kept only for reference
+var BOUNDS={x:1500,y:950,zMin:-1980,zMax:2100};
+
+var WORKS=window.PORTRAIT.works;
+
+/* ── kinships (labels are placeholders — founder finalises wording; one-line change) ── */
+function hash(s){ var h=0; for(var i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; return h; }
+var KINDS=[
+  { key:"hand",   label:"the same hand",  menuLabel:"follow this author",           chipLabel:"their hand",    color:PAL("--a-khaki"),
+    test:function(a,b){ return b.makers.some(function(m){ return a.makers.indexOf(m)>=0; }); },
+    panelTitle:"the same hand" },
+  { key:"eyes",   label:"the same eyes",  menuLabel:"follow this witness",          chipLabel:"their witness", color:PAL("--a-green"), mode:"hub",
+    test:function(a,b){ return b.witnesses.some(function(x){ return a.witnesses.indexOf(x)>=0; }); },
+    panelTitle:"seen by the same eyes" },
+  { key:"chance", label:"by chance",      menuLabel:"follow a random connection",   chipLabel:"by chance",     color:PAL("--a-red"),
+    test:function(a,b){ return ((hash(a.drop)+hash(b.drop))%5)===0; },
+    panelTitle:"a chance kinship" }
+  /* later: "the same breath" — conversation — once the producer bakes the reply graph */
+];
+function rgbOf(hex){ var n=parseInt(hex.replace("#",""),16); return [(n>>16&255)/255,(n>>8&255)/255,(n&255)/255]; }
+KINDS.forEach(function(k){ k.rgb=rgbOf(k.color); });
+
+function makerLabel(w){ var m=w.makers;
+  return m.length===0?"an outsider":m.length===1?m[0]:m.length===2?m[0]+" & "+m[1]:m.slice(0,-1).join(", ")+" & "+m[m.length-1]; }
+function relatedTo(w,k){ return WORKS.filter(function(x){ return x!==w && (k.test(w,x)||k.test(x,w)); }); }
+
+/* ── star home positions: nx,ny → the portrait frame; z clustered by maker so a hand sits together ── */
+var STARS=WORKS.map(function(w,i){
+  var x=(w.nx-0.5)*WORLD_W, y=(0.5-w.ny)*WORLD_H;
+  var zm=STAR_Z_MIN + (hash(w.makers[0]||w.drop)%1000)/1000*STAR_Z_SPAN;
+  var z=zm + ((hash(w.drop)%100)/100-0.5)*46;
+  var s=(D_VANTAGE-z)/D_VANTAGE;   // same anamorphic frame as the cloud — a star sits INSIDE the colour
+  return { work:w, i:i, home:new THREE.Vector3(x*s,y*s,z), lit:1, litT:1,
+           phase:(hash(w.drop)%628)/100 };            // same phase the shader drifts with
+});
+var STARBY={}; STARS.forEach(function(s){ STARBY[s.work.drop]=s; });
+
+/* witness hubs: each distinct witness → a warm sun at the centroid of what they witnessed.
+   as witnesses diversify, more hubs bloom — de-centering made visible. */
+var HUBS=(function(){ var m={};
+  WORKS.forEach(function(w,i){ (w.witnesses||[]).forEach(function(x){ (m[x]=m[x]||[]).push(i); }); });
+  return Object.keys(m).map(function(x){ var idxs=m[x],p=new THREE.Vector3();
+    idxs.forEach(function(i){ p.add(STARS[i].home); }); p.multiplyScalar(1/idxs.length);
+    p.z=Math.min(p.z+70, STAR_Z_MIN+STAR_Z_SPAN+60);
+    return { witness:x, idxs:idxs, pos:p, lit:1, litT:1, phase:(hash(x)%628)/100 }; });
+})();
+
+/* ── renderer / scene / camera ── */
+var renderer;
+try{
+  renderer=new THREE.WebGLRenderer({ canvas:document.getElementById("sky"), antialias:true, alpha:false,
+    powerPreference:"high-performance" });
+}catch(e){ goFallback(); return; }
+renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+var scene=new THREE.Scene();
+scene.background=new THREE.Color(PAL("--bg"));
+scene.fog=new THREE.FogExp2(new THREE.Color("#0a0e13").getHex(), 0.00020);
+var camera=new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 1, 7000);
+camera.position.set(70,-190,2380);      // arrival begins deep in the dark
+var yaw=0, pitch=0;
+
+function resize(){ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight); }
+addEventListener("resize",resize); resize();
+
+/* ════════ THE PORTRAIT CLOUD — Card 347 as a volumetric anamorphic nebula ════════
+   Baked raster → one point per kept pixel. Bright/warm pixels push forward; depth
+   noise gives cloud thickness. Positions are anamorphically corrected for the
+   arrival vantage: from there it reads as the photograph; inside, it dissolves. */
+var cloud=null, CLOUD_OK=false;
+(function buildCloud(){
+  var C=window.CLOUD347; if(!C||!C.rgb) return;   // asset missing → stars over plain dark (still works)
+  var bin=atob(C.rgb), W=C.w, H=C.h, n=W*H;
+  var px=new Uint8Array(n*3);
+  for(var i=0;i<n*3;i++) px[i]=bin.charCodeAt(i);
+  var dp=null;
+  if(C.dep){ var db=atob(C.dep); dp=new Uint8Array(n); for(var j=0;j<n;j++) dp[j]=db.charCodeAt(j); }
+  var pos=[], col=[], seed=[], rng=(function(){ var s=347; return function(){ s=(s*16807)%2147483647; return (s-1)/2147483646; }; })();
+  var LAYERS=5;                                    // points per pixel spread along its ray → solid, uniform columns (no banding)
+  /* Co-locate the cloud's depth with the star sphere: same centre, reaching 10% beyond the
+     stars, so the community sits WITHIN the colour instead of in front of the wall. */
+  var SC = STAR_Z_MIN + STAR_Z_SPAN*0.5;           // star-sphere centre in z
+  var SR = STAR_Z_SPAN*0.5 * 1.10;                 // cloud reaches 10% past the stars (front = hand cap, back = wall cap)
+  for(var p=0;p<n;p++){
+    var r=px[p*3]/255, g=px[p*3+1]/255, b=px[p*3+2]/255;
+    var lum=0.2126*r+0.7152*g+0.0722*b;
+    if(lum<0.045 && rng()>0.35) continue;          // thin the near-black; darkness stays dark
+    var ix=p%W, iy=(p-ix)/W;
+    var x=((ix+0.5)/W-0.5)*WORLD_W, y=(0.5-(iy+0.5)/H)*WORLD_H;
+    /* EDGE VIGNETTE — ray-extrusion turns the image's straight frame edges into flat frustum FACES
+       (the "golden plane"). Fade points toward the frame so those faces dissolve into a soft nebula
+       edge. Can't be fixed by along-ray moves (they stay on the face); must lower edge *density*. */
+    var MARGIN=0.15;
+    var ef=Math.max(0,Math.min(1,Math.min((ix+0.5)/W,1-(ix+0.5)/W)/MARGIN))
+          *Math.max(0,Math.min(1,Math.min((iy+0.5)/H,1-(iy+0.5)/H)/MARGIN));
+    var edgeFade=ef*ef*(3-2*ef);                            // smootherstep: full inside, →0 at the frame
+    /* scene depth mapped onto the sphere (0=hand/near .. 1=wall/far) + luminance relief for real FORM */
+    var d01 = dp ? dp[p]/255 : (1-Math.pow(lum,1.25));
+    var surf = SC + (0.5 - d01)*2*SR + (lum-0.45)*130;      // surface depth where the pixel reads from the lander
+    /* EVERY pixel is distributed uniformly along its own vantage ray, from its surface toward the
+       sphere centre — foreground reaches back, background reaches forward — so hand AND wall gain
+       body and no flat 'card' plane survives, while every point stays on the pixel's ray (still
+       pixel-sharp from arrival). This is the whole trick: depth along the ray is free. */
+    var COLUMN=SR*1.05;                                     // uniform column length for all pixels
+    var dir=(surf>SC)?-1:1;                                 // reach toward the centre
+    /* ★ per-pixel random depth shift BEFORE the column. The depth map has huge flat blocks
+       (dp=205 = the wall = 36% of pixels at ONE depth); without this they translate as a rigid
+       slab (the "golden plane"). Scattering each pixel's surface shatters the block into cloud.
+       Free: it's along the ray, so arrival stays pixel-sharp; it also softens the hard frame edge. */
+    var base=surf + (rng()*2-1)*300;
+    for(var L=0;L<LAYERS;L++){
+      var t=(L+rng())/LAYERS;                               // uniform coverage along the column — no banding, no thinning
+      var jit=(rng()*2-1)*(14+(1-lum)*55);                  // organic scatter (along-ray: free for arrival)
+      var z=base + dir*COLUMN*t + jit;
+      var s=(D_VANTAGE-z)/D_VANTAGE;                        // recompute per point → still on the pixel's ray → sharp from the vantage
+      pos.push(x*s+(L?(rng()*2-1)*3.4:0), y*s+(L?(rng()*2-1)*3.4:0), z); // small lateral spread = the only cost to sharpness
+      col.push(r,g,b);
+      seed.push(rng()*6.2832, 0.5+rng(), 0.62*edgeFade);    // phase, speed, layer weight (faded toward the frame → no plane)
+    }
+  }
+  var geo=new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos,3));
+  geo.setAttribute("aColor",   new THREE.Float32BufferAttribute(col,3));
+  geo.setAttribute("aSeed",    new THREE.Float32BufferAttribute(seed,3));
+  var mat=new THREE.ShaderMaterial({
+    transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+    uniforms:{ uT:{value:0}, uIgnite:{value:0}, uDim:{value:1}, uPixH:{value:innerHeight},
+      uTint:{value:new THREE.Vector3(1,1,1)} },
+    vertexShader:
+      "attribute vec3 aColor; attribute vec3 aSeed;\n"+
+      "uniform float uT,uIgnite,uPixH;\n"+
+      "varying vec3 vC; varying float vA;\n"+
+      "void main(){\n"+
+      "  vC=aColor;\n"+
+      "  vec3 p=position;\n"+
+      "  float br=dot(aColor,vec3(.2126,.7152,.0722));\n"+
+      "  p.x+=sin(uT*.21*aSeed.y+aSeed.x)*2.6;\n"+                 // the cloud breathes, barely
+      "  p.y+=cos(uT*.17*aSeed.y+aSeed.x*1.7)*2.6;\n"+
+      "  p.z+=sin(uT*.13*aSeed.y+aSeed.x*2.3)*3.4;\n"+
+      "  vec4 mv=modelViewMatrix*vec4(p,1.);\n"+
+      "  float d=-mv.z;\n"+
+      "  gl_PointSize=clamp(7.0*(uPixH/720.)*(900./max(d,60.)),1.4,34.);\n"+   // larger soft balls hold colour as gas, not dots
+      "  float tw=.82+.18*sin(uT*aSeed.y+aSeed.x*3.1);\n"+
+      "  float ig=smoothstep(0.,1.,clamp(uIgnite*1.35-fract(aSeed.x*.159)* .35,0.,1.));\n"+
+      "  float nearFade=smoothstep(26.,150.,d);\n"+                // substanceless: melts as you pass through
+      "  vA=(.042+.14*br)*tw*ig*nearFade*aSeed.z*.82;\n"+          // 5 uniform layers + wall now spread: per-point alpha lowered so colour holds, no hot core
+      "  gl_Position=projectionMatrix*mv;\n"+
+      "}",
+    fragmentShader:
+      "varying vec3 vC; varying float vA; uniform float uDim; uniform vec3 uTint;\n"+
+      "void main(){\n"+
+      "  vec2 q=gl_PointCoord-.5; float r2=dot(q,q);\n"+
+      "  float fall=exp(-r2*6.5)-.010; if(fall<=0.) discard;\n"+
+      "  gl_FragColor=vec4(vC*1.12*uTint, vA*fall*uDim);\n"+
+      "}"
+  });
+  cloud=new THREE.Points(geo,mat); cloud.frustumCulled=false;
+  scene.add(cloud); CLOUD_OK=true;
+})();
+
+/* ════════ THE WORK-STARS — one warm light per witnessed work (one draw call) ════════ */
+var starGeo=new THREE.BufferGeometry();
+(function(){
+  var n=STARS.length, pos=new Float32Array(n*3), ph=new Float32Array(n), ign=new Float32Array(n);
+  STARS.forEach(function(s,i){ pos[i*3]=s.home.x; pos[i*3+1]=s.home.y; pos[i*3+2]=s.home.z;
+    ph[i]=(hash(s.work.drop)%628)/100; ign[i]=i/n*0.6; });
+  starGeo.setAttribute("position", new THREE.BufferAttribute(pos,3));
+  starGeo.setAttribute("aSkyPos",  new THREE.BufferAttribute(pos.slice(),3));  // where they stand in tonight's sky
+  starGeo.setAttribute("aEggPos",  new THREE.BufferAttribute(pos.slice(),3));  // typed-codeword formation target (init = home → uEggMix 0 is a no-op)
+  starGeo.setAttribute("aPhase",   new THREE.BufferAttribute(ph,1));
+  starGeo.setAttribute("aIgn",     new THREE.BufferAttribute(ign,1));
+  starGeo.setAttribute("aLit",     new THREE.BufferAttribute(new Float32Array(n).fill(1),1));
+})();
+var KHAKI=rgbOf(PAL("--a-khaki"));
+var starMat=new THREE.ShaderMaterial({
+  transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+  uniforms:{ uT:{value:0}, uIgnite:{value:0}, uPixH:{value:innerHeight},
+    uRayO:{value:new THREE.Vector3()}, uRayD:{value:new THREE.Vector3(0,0,-1)},
+    uRayGlow:{value:0}, uSkyMix:{value:0}, uEggMix:{value:0}, uWarm:{value:new THREE.Vector3(KHAKI[0],KHAKI[1],KHAKI[2])} },
+  vertexShader:
+    "attribute float aPhase,aIgn,aLit; attribute vec3 aSkyPos,aEggPos;\n"+
+    "uniform float uT,uIgnite,uPixH,uRayGlow,uSkyMix,uEggMix;\n"+
+    "uniform vec3 uRayO,uRayD;\n"+
+    "varying float vB;\n"+
+    "void main(){\n"+
+    "  float ms=smoothstep(0.,1.,clamp(uSkyMix*1.35-fract(aPhase)*.35,0.,1.));\n"+  // staggered ascent
+    "  vec3 p=mix(position,aSkyPos,ms);\n"+
+    "  float me=smoothstep(0.,1.,clamp(uEggMix*1.35-fract(aPhase)*.35,0.,1.));\n"+  // staggered drone-show ascent
+    "  p=mix(p,aEggPos,me);\n"+                                  // a typed name pulls the field into a shape
+
+    "  p.x+=sin(uT*.13+aPhase)*6.0;\n"+                          // gentle drift, sprung to home
+    "  p.y+=cos(uT*.11+aPhase*1.7)*6.0;\n"+
+    "  p.z+=sin(uT*.09+aPhase*2.3)*5.0;\n"+
+    "  vec3 rel=p-uRayO; float along=max(dot(rel,uRayD),0.);\n"+ // nearest point on the gaze-ray
+    "  vec3 cl=uRayO+uRayD*along; float dd=length(cl-p);\n"+
+    "  float fall=smoothstep(340.,0.,dd)*smoothstep(40.,140.,along);\n"+ // light pools where you look — but nothing moves
+    "  vec4 mv=modelViewMatrix*vec4(p,1.);\n"+
+    "  float d=-mv.z;\n"+
+    "  float tw=.62+.38*sin(uT*(0.9+fract(aPhase)*1.1)+aPhase*3.7);\n"+
+    "  float ig=smoothstep(0.,1.,clamp((uIgnite-aIgn)*3.,0.,1.));\n"+
+    "  float sizeMul=1.0+clamp(aLit-1.0,0.,1.);\n"+              // a gathered person's OWN stars read unmistakably larger, not just brighter
+    "  gl_PointSize=clamp((15.+9.*tw)*(uPixH/720.)*(1150./max(d,70.))*sizeMul,3.,64.);\n"+
+    "  vB=ig*(.55+.45*tw)*(.16+.84*aLit)+fall*uRayGlow;\n"+      // light pools where you look
+    "  gl_Position=projectionMatrix*mv;\n"+
+    "}",
+  fragmentShader:
+    "uniform vec3 uWarm;\n"+
+    "varying float vB;\n"+
+    "void main(){\n"+
+    "  vec2 q=gl_PointCoord-.5; float r=length(q)*2.;\n"+
+    "  float core=exp(-r*r*7.0);\n"+
+    "  float halo=exp(-r*r*2.1)*.5;\n"+
+    "  vec3 c=mix(uWarm,vec3(1.,.97,.87),core*.9);\n"+
+    "  float a=(core+halo)*vB;\n"+
+    "  if(a<.004) discard;\n"+
+    "  gl_FragColor=vec4(c,a);\n"+
+    "}"
+});
+var starPts=new THREE.Points(starGeo,starMat); starPts.frustumCulled=false; scene.add(starPts);
+
+/* witness hubs — same warm light, a fuller glow (never a number) */
+var hubGeo=new THREE.BufferGeometry();
+(function(){ var n=HUBS.length, pos=new Float32Array(n*3), ph=new Float32Array(n), ign=new Float32Array(n);
+  HUBS.forEach(function(h,i){ pos[i*3]=h.pos.x; pos[i*3+1]=h.pos.y; pos[i*3+2]=h.pos.z;
+    ph[i]=(hash(h.witness)%628)/100; ign[i]=0.25; });
+  hubGeo.setAttribute("position",new THREE.BufferAttribute(pos,3));
+  hubGeo.setAttribute("aSkyPos",new THREE.BufferAttribute(pos.slice(),3));
+  hubGeo.setAttribute("aPhase",new THREE.BufferAttribute(ph,1));
+  hubGeo.setAttribute("aIgn",new THREE.BufferAttribute(ign,1));
+  hubGeo.setAttribute("aLit",new THREE.BufferAttribute(new Float32Array(n).fill(1),1));
+})();
+var hubMat=starMat.clone();
+hubMat.uniforms.uWarm.value=new THREE.Vector3(KHAKI[0]*1.04,KHAKI[1]*1.0,KHAKI[2]*0.82);
+var hubPts=new THREE.Points(hubGeo,hubMat); hubPts.frustumCulled=false;
+hubPts.onBeforeRender=function(){ hubMat.uniforms.uT.value=starMat.uniforms.uT.value;
+  hubMat.uniforms.uIgnite.value=starMat.uniforms.uIgnite.value;
+  hubMat.uniforms.uPixH.value=starMat.uniforms.uPixH.value;
+  hubMat.uniforms.uRayO.value.copy(starMat.uniforms.uRayO.value);
+  hubMat.uniforms.uRayD.value.copy(starMat.uniforms.uRayD.value);
+  hubMat.uniforms.uRayGlow.value=starMat.uniforms.uRayGlow.value; };
+scene.add(hubPts);
+
+/* ambient dust — cool, dim, for depth & parallax (alive at rest) */
+(function(){
+  var n=420, pos=new Float32Array(n*3), ph=new Float32Array(n), ign=new Float32Array(n);
+  for(var i=0;i<n;i++){ pos[i*3]=(Math.random()-.5)*2*BOUNDS.x; pos[i*3+1]=(Math.random()-.5)*2*BOUNDS.y;
+    pos[i*3+2]=BOUNDS.zMin+Math.random()*(BOUNDS.zMax-BOUNDS.zMin); ph[i]=Math.random()*6.28; ign[i]=Math.random()*0.5; }
+  var g=new THREE.BufferGeometry();
+  g.setAttribute("position",new THREE.BufferAttribute(pos,3));
+  g.setAttribute("aSkyPos",new THREE.BufferAttribute(pos.slice(),3));
+  g.setAttribute("aPhase",new THREE.BufferAttribute(ph,1));
+  g.setAttribute("aIgn",new THREE.BufferAttribute(ign,1));
+  g.setAttribute("aLit",new THREE.BufferAttribute(new Float32Array(n).fill(0.16),1));
+  var m=starMat.clone();
+  var peri=rgbOf(PAL("--a-peri"));
+  m.uniforms.uWarm.value=new THREE.Vector3(peri[0]*.6,peri[1]*.62,peri[2]*.7);
+  var pts=new THREE.Points(g,m); pts.frustumCulled=false;
+  pts.onBeforeRender=function(){ m.uniforms.uT.value=starMat.uniforms.uT.value;
+    m.uniforms.uIgnite.value=starMat.uniforms.uIgnite.value; m.uniforms.uPixH.value=starMat.uniforms.uPixH.value;
+    m.uniforms.uRayO.value.copy(starMat.uniforms.uRayO.value); m.uniforms.uRayD.value.copy(starMat.uniforms.uRayD.value);
+    m.uniforms.uRayGlow.value=starMat.uniforms.uRayGlow.value*0.3; };
+  scene.add(pts);
+})();
+
+/* ════════ THE RIBBONS — flowing golden highways, focus-only, one draw call ════════ */
+var ribbonMesh=null, ribbonEdges=[];
+var RIB_SEG=42;
+function edgeCurve(a,b,seed){
+  var mid=a.clone().add(b).multiplyScalar(0.5);
+  var dir=b.clone().sub(a); var len=dir.length()||1; dir.normalize();
+  var up=new THREE.Vector3(0,1,0);
+  var perp=new THREE.Vector3().crossVectors(dir,up);
+  if(perp.lengthSq()<1e-4) perp.set(1,0,0); perp.normalize();
+  var side=(seed%2===0)?1:-1;
+  var ctrl=mid.add(perp.multiplyScalar(side*len*0.10)).add(new THREE.Vector3(0,-len*0.055,0));
+  return { p0:a.clone(), c:ctrl, p1:b.clone(), len:len, seed:seed };
+}
+function bez(e,u,out){ var m=1-u;
+  out.set( m*m*e.p0.x+2*m*u*e.c.x+u*u*e.p1.x,
+           m*m*e.p0.y+2*m*u*e.c.y+u*u*e.p1.y,
+           m*m*e.p0.z+2*m*u*e.c.z+u*u*e.p1.z ); return out; }
+
+var ribbonMat=new THREE.ShaderMaterial({
+  transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, side:THREE.DoubleSide,
+  /* ribbon feel-knobs: uRibW = (base, taper) world half-width; uRibPx caps the
+     half-width per unit of view depth (0.018 ≈ 18 units wide at 1000 out). */
+  uniforms:{ uT:{value:0}, uOn:{value:0},
+    uRibW:{value:new THREE.Vector2(2.27,2.40)}, uRibPx:{value:0.012} },
+  vertexShader:
+    "attribute vec3 aP0,aC,aP1; attribute float aT,aSide,aSeed,aLen; attribute vec3 aTint;\n"+
+    "uniform float uT,uRibPx; uniform vec2 uRibW;\n"+
+    "varying float vT,vSide,vSeed,vLen,vD; varying vec3 vTint;\n"+
+    "void main(){\n"+
+    "  float u=aT; float m=1.-u;\n"+
+    "  vec3 c=aC + vec3(sin(uT*.5+aSeed)*aLen*.028, sin(uT*.34+aSeed*1.7)*aLen*.02, cos(uT*.42+aSeed)*aLen*.024);\n"+ // the sag sways
+    "  vec3 p = m*m*aP0 + 2.*m*u*c + u*u*aP1;\n"+
+    "  vec3 tang = normalize(2.*m*(c-aP0) + 2.*u*(aP1-c));\n"+
+    "  vec3 view = normalize(cameraPosition - p);\n"+
+    "  vec3 sideDir = normalize(cross(view,tang));\n"+
+    "  float taper = pow(sin(3.14159*u),.3);\n"+                   // eases at the ends, holds its width
+    /* Width is in WORLD units, so a ribbon you stand near swells across the screen.
+       Cap how wide one may draw in VIEW terms (uRibPx ≈ half-width at 1000 units)
+       so a filament stays a filament close up, and keep the far look untouched. */
+    "  float halfW = min(uRibW.x + uRibW.y*taper, uRibPx*max(-(modelViewMatrix*vec4(p,1.)).z,1.));\n"+
+    "  p += sideDir*aSide*halfW;\n"+
+    "  vT=u; vSide=aSide; vSeed=aSeed; vLen=aLen; vTint=aTint;\n"+
+    "  vec4 mv=modelViewMatrix*vec4(p,1.);\n"+
+    "  vD=-mv.z;\n"+                                                // view depth → the near fade below
+    "  gl_Position=projectionMatrix*mv;\n"+
+    "}",
+  fragmentShader:
+    /* a light-cycle wall, in warm gold: two bright rails, a translucent body between */
+    "uniform float uT,uOn;\n"+
+    "varying float vT,vSide,vSeed,vLen,vD; varying vec3 vTint;\n"+
+    "void main(){\n"+
+    "  float s=abs(vSide);\n"+                                     // 0 at the spine → 1 at the edge
+    "  float rail=smoothstep(.58,.84,s)*(1.-smoothstep(.9,1.,s));\n"+ // the bright outer rails
+    "  float body=(1.-s*s)*.10;\n"+                                // the dim glassy fill
+    "  float x=vT*vLen/115. - uT*.42 + vSeed;\n"+                  // light coursing along the rails
+    "  float f1=fract(x);\n"+
+    "  float flow=smoothstep(.0,.16,f1)*smoothstep(.48,.16,f1);\n"+
+    "  vec3 hot=vec3(1.,.96,.83);\n"+                              // near-white gold at the rails
+    "  vec3 c=mix(vTint*1.15,hot,clamp(rail+flow*.4,0.,1.));\n"+
+    "  float ends=smoothstep(0.,.05,vT)*smoothstep(1.,.95,vT);\n"+
+    /* Ribbons hold a fixed WORLD width, so one sweeping past the camera fills the
+       screen and — additively, several at once — blows out to white. Searching a
+       name lands you right at the hub where every ribbon converges, which turned
+       the primary invited action into a starburst. Melt them close in, exactly as
+       the cloud does with its own nearFade: substanceless as they pass you. */
+    "  float near=smoothstep(26.,210.,vD);\n"+
+    "  float a=(body + rail*(.95+.5*flow))*ends*uOn*near;\n"+
+    "  if(a<.004) discard;\n"+
+    "  gl_FragColor=vec4(c,a);\n"+
+    "}"
+});
+function clearRibbons(){ if(ribbonMesh){ scene.remove(ribbonMesh); ribbonMesh.geometry.dispose(); ribbonMesh=null; }
+  ribbonEdges=[]; ribbonMat.uniforms.uOn.value=0; }
+function buildRibbons(edges,tints){
+  clearRibbons(); if(!edges.length) return;
+  ribbonEdges=edges;
+  var nV=edges.length*(RIB_SEG+1)*2, aP0=new Float32Array(nV*3), aC=new Float32Array(nV*3), aP1=new Float32Array(nV*3),
+      aT=new Float32Array(nV), aS=new Float32Array(nV), aSeed=new Float32Array(nV), aLen=new Float32Array(nV),
+      aTint=new Float32Array(nV*3), idx=[];
+  var v=0;
+  edges.forEach(function(e,ei){
+    var tint=tints[ei];
+    for(var s=0;s<=RIB_SEG;s++){
+      var u=s/RIB_SEG;
+      for(var half=0; half<2; half++){
+        aP0[v*3]=e.p0.x; aP0[v*3+1]=e.p0.y; aP0[v*3+2]=e.p0.z;
+        aC [v*3]=e.c.x;  aC [v*3+1]=e.c.y;  aC [v*3+2]=e.c.z;
+        aP1[v*3]=e.p1.x; aP1[v*3+1]=e.p1.y; aP1[v*3+2]=e.p1.z;
+        aT[v]=u; aS[v]=half===0?-1:1; aSeed[v]=e.seed*0.7331; aLen[v]=e.len;
+        aTint[v*3]=tint[0]; aTint[v*3+1]=tint[1]; aTint[v*3+2]=tint[2];
+        v++;
+      }
+      if(s<RIB_SEG){ var b0=v-2;
+        idx.push(b0,b0+1,b0+2, b0+1,b0+3,b0+2); }
+    }
+  });
+  var g=new THREE.BufferGeometry();
+  g.setAttribute("position",new THREE.BufferAttribute(new Float32Array(nV*3),3)); // computed in shader
+  g.setAttribute("aP0",new THREE.BufferAttribute(aP0,3));
+  g.setAttribute("aC", new THREE.BufferAttribute(aC,3));
+  g.setAttribute("aP1",new THREE.BufferAttribute(aP1,3));
+  g.setAttribute("aT", new THREE.BufferAttribute(aT,1));
+  g.setAttribute("aSide",new THREE.BufferAttribute(aS,1));
+  g.setAttribute("aSeed",new THREE.BufferAttribute(aSeed,1));
+  g.setAttribute("aLen", new THREE.BufferAttribute(aLen,1));
+  g.setAttribute("aTint",new THREE.BufferAttribute(aTint,3));
+  g.setIndex(idx);
+  ribbonMesh=new THREE.Mesh(g,ribbonMat); ribbonMesh.frustumCulled=false;
+  scene.add(ribbonMesh);
+}
+
+/* ════════ FOCUS — one person's threads only; everyone else recedes ════════ */
+var focusStar=null, selKind=KINDS[0], kinStars=[];
+var gatherOn=false, gatherWho=null, gatherSet=[];   // a searched person's constellation (see THE GATHER)
+var gatherEdges=[], gatherConName="";               // the real constellation drawn behind them (Tier A)
+var KIN_CAP=28, SPOKE_CAP=64;   // legibility caps as the field grows toward 10k — never a hairball
+var skyOn=false;                 // tonight's sky (set below); positions follow the mode
+/* where a star IS right now, for ribbons, picking and snippets alike. A gathered star
+   is wherever its constellation put it, which is why the threads follow the figure. */
+function posOf(s){ if(gatherOn&&s.gpos) return s.gpos; return (skyOn&&s.skyPos)?s.skyPos:s.home; }
+
+function computeFocus(){
+  kinStars=[];
+  STARS.forEach(function(s){ s.litTarget = focusStar?0.14:1; });
+  HUBS.forEach(function(h){ h.litTarget = focusStar?0.2:1; });
+  if(focusStar) focusStar.litTarget=1;               // the chosen person always stays lit
+  clearRibbons();
+  if(!focusStar||!selKind){ AUDIO.kinship([],null); updateMenu(); return; }
+  var fw=focusStar.work;
+  var kin=STARS.filter(function(s){ return s!==focusStar && (selKind.test(fw,s.work)||selKind.test(s.work,fw)); });
+  var fp=posOf(focusStar);
+  kin.sort(function(a,b){ return posOf(a).distanceToSquared(fp)-posOf(b).distanceToSquared(fp); });
+  var edges=[], tints=[];
+  if(gatherOn && gatherEdges.length){
+    /* THE REAL CONSTELLATION'S OWN LINES (Tier A). The stars were placed along a named
+       figure's edges; draw those very edges, so the shape reads as Lyra, Orion, the Plough
+       — not an arbitrary graph. The searched person's stars lie on the lines; the lit
+       thread still tints them. */
+    gatherEdges.forEach(function(e,ei){ edges.push(edgeCurve(e[0],e[1],(ei+1)*2654435761>>>0)); tints.push(selKind.rgb); });
+    gatherSet.forEach(function(s){ if(s!==focusStar) kinStars.push(s); });
+  } else if(gatherOn && gatherSet.length>1){
+    /* FALLBACK (no constellation data): join the figure like a constellation with a
+       minimum spanning tree (Prim, n≤45) — each light to its nearest neighbour, no fan. */
+    var gp=gatherSet.map(function(s){ return posOf(s); });
+    var gn=gatherSet.length, inTree=new Uint8Array(gn), best=new Float64Array(gn), from=new Int32Array(gn);
+    for(var gi=0; gi<gn; gi++){ best[gi]=Infinity; from[gi]=-1; }
+    best[Math.max(0,gatherSet.indexOf(focusStar))]=0;      // grow outward from the person
+    for(var step=0; step<gn; step++){
+      var bi=-1, bd=Infinity;
+      for(var gj=0; gj<gn; gj++) if(!inTree[gj] && best[gj]<bd){ bd=best[gj]; bi=gj; }
+      if(bi<0) break;
+      inTree[bi]=1;
+      var gs=gatherSet[bi];
+      gs.litTarget=1; if(gs!==focusStar) kinStars.push(gs);
+      if(from[bi]>=0){ edges.push(edgeCurve(gp[from[bi]],gp[bi],hash(gs.work.drop)));
+                       tints.push(selKind.rgb); }
+      for(var gk=0; gk<gn; gk++) if(!inTree[gk]){
+        var gd=gp[bi].distanceToSquared(gp[gk]);
+        if(gd<best[gk]){ best[gk]=gd; from[gk]=bi; }
+      }
+    }
+  } else if(selKind.mode==="hub" && !skyOn){
+    /* the same eyes: a sunburst from each shared witness to what they saw */
+    var hubs=HUBS.filter(function(h){ return fw.witnesses.indexOf(h.witness)>=0; });
+    hubs.forEach(function(h){
+      h.litTarget=1;
+      var idxs=h.idxs.slice();
+      idxs.sort(function(a,b){ return STARS[a].home.distanceToSquared(h.pos)-STARS[b].home.distanceToSquared(h.pos); });
+      var spokes=idxs.slice(0,SPOKE_CAP);
+      if(spokes.indexOf(focusStar.i)<0) spokes.push(focusStar.i);
+      spokes.forEach(function(i){
+        STARS[i].litTarget=1; if(STARS[i]!==focusStar) kinStars.push(STARS[i]);
+        edges.push(edgeCurve(h.pos,STARS[i].home,hash(h.witness)+i));
+        tints.push(selKind.rgb);
+      });
+    });
+  } else {
+    kin.slice(0,KIN_CAP).forEach(function(s){
+      s.litTarget=1; kinStars.push(s);
+      edges.push(edgeCurve(fp,posOf(s),hash(fw.drop)+s.i));
+      tints.push(selKind.rgb);
+    });
+  }
+  buildRibbons(edges,tints);
+  /* everyone drawn into the figure stays lit, even where the lit thread would not
+     have reached them — the constellation is the person, not just their kinship.
+     Their OWN works burn brighter than the ring of people they reach, so "which
+     light is them" is answered at a glance (aLit>1 blooms through the shader). */
+  if(gatherOn) gatherSet.forEach(function(s){ s.litTarget = s.gcore ? GATHER_CORE_LIT : 1; });
+  AUDIO.kinship(kinStars,focusStar);
+  updateMenu();
+}
+function setFocus(s){ focusStar=s; AUDIO.person(s); computeFocus(); }
+function setKind(k,forceOn){
+  selKind=(!forceOn && selKind && selKind.key===k.key)?null:k;
+  /* a figure is drawn from whichever thread is lit, so changing the thread re-draws it:
+     the same person, seen three ways, without the camera moving */
+  if(gatherOn && gatherWho && selKind){ gatherFor(gatherWho.name,gatherWho.role); return; }
+  computeFocus();
+}
+
+/* ════════ MENU (right margin) — relational, becomes a person's menu ════════ */
+var threadsEl=document.getElementById("threads");
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+function updateMenu(){
+  var h="";
+  if(!focusStar){
+    h+='<div class="lbl">the constellation</div>';
+    h+='<div class="rest">search a name,<br>or touch a light</div>';
+  } else {
+    var w=focusStar.work;
+    h+='<div class="lbl">their threads</div>';
+    h+='<div class="who">'+esc(makerLabel(w))+'</div>';
+    if(gatherOn&&gatherConName) h+='<div class="conname">in '+esc(gatherConName)+'</div>';
+    KINDS.forEach(function(k,idx){
+      var on=selKind&&selKind.key===k.key;
+      h+='<div class="kt'+(on?" on":"")+'" data-k="'+k.key+'">'+esc(k.menuLabel)+
+         '<span class="dot" style="color:'+k.color+'"></span></div>';
+    });
+    if(selKind&&kinStars.length){
+      h+='<div class="kin"><div class="lbl" style="margin-top:6px">'+esc(selKind.label)+'</div>';
+      kinStars.slice(0,6).forEach(function(s){
+        h+='<div class="kn" data-i="'+s.i+'"><img loading="lazy" referrerpolicy="no-referrer" src="'+s.work.img+'" alt="">'+
+           '<span class="nm">'+esc(makerLabel(s.work))+'</span></div>'; });
+      if(kinStars.length>6) h+='<div class="more">…and others, along the thread</div>';
+      h+='</div>';
+    }
+  }
+  threadsEl.innerHTML=h;
+  threadsEl.querySelectorAll(".kt").forEach(function(el){
+    el.addEventListener("click",function(){ setKind(KINDS.find(function(k){return k.key===el.dataset.k;})); });
+  });
+  threadsEl.querySelectorAll(".kn").forEach(function(el){
+    el.addEventListener("click",function(){ setFocus(STARS[+el.dataset.i]); });
+  });
+}
+updateMenu();
+
+/* ════════ FLIGHT — WASD + space/shift verticals, drag to look, no momentum ════════ */
+var keys={}, vel=new THREE.Vector3();
+var mouseX=innerWidth/2, mouseY=innerHeight/2;
+var SPEED=460;
+var skyEl=document.getElementById("sky");
+function searchFocused(){ return document.activeElement===searchInput; }
+function movementKeyDown(){ return keys.KeyW||keys.KeyA||keys.KeyS||keys.KeyD||keys.Space||keys.ShiftLeft||keys.ShiftRight||twoFinger; }
+addEventListener("keydown",function(e){
+  if(e.key==="Escape"){ onEscape(); return; }
+  if(searchFocused()) return;
+  if(e.code==="Space"||e.key===" "||e.key==="Spacebar"){ e.preventDefault(); keys.Space=true; } // space rises, always
+  keys[e.code]=true;
+  if(keys.KeyW||keys.KeyA||keys.KeyS||keys.KeyD||keys.Space) document.body.classList.add("explored");
+  if(e.code==="Home" && !bloomOpen()) glideHome();
+});
+addEventListener("keyup",function(e){ keys[e.code]=false;
+  if(e.key===" "||e.key==="Spacebar") keys.Space=false; });
+addEventListener("blur",function(){ keys={}; });
+
+/* look around by dragging the sky — like turning your head, never a trap */
+var dragging=false, dragPX=0, dragPY=0;
+addEventListener("pointermove",function(e){
+  mouseX=e.clientX; mouseY=e.clientY;
+  if(dragging && !bloomOpen()){
+    var dx=e.clientX-dragPX, dy=e.clientY-dragPY; dragPX=e.clientX; dragPY=e.clientY;
+    if(glide.active) return;                       // a drag during a glide only cancels on release
+    yaw  += dx*0.0024;                             // the world follows your hand
+    if(!(GYRO.active&&GYRO.have)){                 // in gyro mode, pitch belongs to the phone
+      pitch+= dy*0.0024;
+      pitch=Math.max(-1.35,Math.min(1.35,pitch));
+    }
+  }
+});
+
+var _yAxis=new THREE.Vector3(0,1,0);
+function flightStep(dt){
+  if(glide.active) return;
+  if(GYRO.active&&GYRO.have){
+    /* the phone is your head; a drag only turns you (yaw offset) */
+    camera.quaternion.setFromAxisAngle(_yAxis,yaw).multiply(GYRO.q);
+  } else {
+    camera.quaternion.setFromEuler(new THREE.Euler(pitch,yaw,0,"YXZ"));
+  }
+  /* movement: direct velocity, quick ease — release and you hang in space */
+  var tv=new THREE.Vector3();
+  if(keys.KeyW||twoFinger) tv.z-=1; if(keys.KeyS) tv.z+=1;
+  if(keys.KeyA) tv.x-=1; if(keys.KeyD) tv.x+=1;
+  if(tv.lengthSq()>0) tv.normalize().multiplyScalar(SPEED);
+  tv.applyQuaternion(camera.quaternion);
+  if(keys.Space) tv.y+=SPEED*0.85;                 // rise — Minecraft creative
+  if(keys.ShiftLeft||keys.ShiftRight) tv.y-=SPEED*0.85;   // sink
+  var k=1-Math.exp(-dt*9);
+  vel.lerp(tv,k);
+  camera.position.addScaledVector(vel,dt);
+  camera.position.x=Math.max(-BOUNDS.x,Math.min(BOUNDS.x,camera.position.x));
+  camera.position.y=Math.max(-BOUNDS.y,Math.min(BOUNDS.y,camera.position.y));
+  camera.position.z=Math.max(BOUNDS.zMin,Math.min(BOUNDS.zMax,camera.position.z));
+}
+
+/* ════════ AUTO-GLIDE — the cinematic skim along a golden highway ════════ */
+var glide={active:false};
+function smoother(u){ return u*u*u*(u*(u*6-15)+10); }
+function startGlide(curve,dest,lookAtDest,dur){
+  glide={ active:true, t:0, dur:dur, curve:curve, dest:dest, look:lookAtDest,
+    p0:camera.position.clone(), q0:camera.quaternion.clone() };
+  vel.set(0,0,0);
+}
+/* (there was a glideToStar() here — the camera no longer travels to anyone. A person's
+   network is composed by bringing it to the lander instead; see THE GATHER.) */
+function glideHome(){
+  var e=edgeCurve(camera.position.clone(),VANTAGE.clone(),7);
+  e.c.y+=60;
+  startGlide(e,null,new THREE.Vector3(0,0,0),Math.max(2.0,Math.min(4.2,e.len/420)));
+  glide.thenFocus=null; glide.release=true;
+}
+/* the easter-egg's zoom back to the lander: clean & gentle, reliable from ANYWHERE.
+   No wide lateral swing (that caused the end-glitch); clears any held movement key so a
+   just-flown W can't insta-cancel it; glide.egg makes it complete rather than cancel. */
+function glideToVantage(){
+  keys={}; vel.set(0,0,0);
+  var from=camera.position.clone(), d=from.distanceTo(VANTAGE);
+  var mid=from.clone().lerp(VANTAGE,0.5); mid.y+=Math.min(90,d*0.05);   // a soft rise, not a swerve
+  var e={ p0:from, c:mid, p1:VANTAGE.clone(), len:d, seed:0 };
+  startGlide(e,null,new THREE.Vector3(0,0,0),Math.max(1.3,Math.min(3.2,d/560)));
+  glide.thenFocus=null; glide.release=true; glide.egg=true;
+}
+var _gp=new THREE.Vector3(), _gl=new THREE.Vector3(), _m4=new THREE.Matrix4(), _qd=new THREE.Quaternion();
+function glideStep(dt){
+  if(!glide.active) return;
+  if(movementKeyDown() && !glide.egg){ endGlide(false); return; } // an invitation, not a rail (egg zoom is a deliberate reveal — it completes)
+  glide.t+=dt/glide.dur;
+  var u=Math.min(1,glide.t), su=smoother(u);
+  bez(glide.curve,su,_gp);
+  /* skim just above the ribbon; settle short of the person */
+  var off=Math.sin(Math.PI*su)*26;
+  _gp.y+=off;
+  if(glide.dest){ // approach: settle a held breath away, never on top of them
+    var destP=posOf(glide.dest), toDest=destP.clone().sub(_gp), dd=toDest.length();
+    if(dd<1) toDest.copy(destP).sub(glide.p0);   // final step lands ON them → back off along the approach
+    if(dd<175) _gp.copy(destP).addScaledVector(toDest.normalize(),-175);
+  }
+  var p=glide.p0.clone().lerp(_gp,Math.min(1,su/0.16));            // ease off the starting mark
+  camera.position.copy(p);
+  /* look along the highway, then toward the person */
+  var lookU=Math.min(1,su+0.06);
+  bez(glide.curve,lookU,_gl); _gl.y+=Math.sin(Math.PI*lookU)*26;
+  if(su>0.72 && glide.look) _gl.lerp(glide.look,(su-0.72)/0.28);
+  else if(glide.look && !glide.dest) _gl.lerp(glide.look,su);
+  _m4.lookAt(camera.position,_gl,new THREE.Vector3(0,1,0));
+  _qd.setFromRotationMatrix(_m4);
+  camera.quaternion.copy(glide.q0).slerp(_qd,Math.min(1,su<0.2?su/0.2:1));
+  if(u>=1) endGlide(true);
+}
+function endGlide(arrived){
+  if(GYRO.active&&GYRO.have){
+    /* keep looking where the glide left you: yaw offset = camera − phone */
+    var vc=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);
+    var vg=new THREE.Vector3(0,0,-1).applyQuaternion(GYRO.q);
+    yaw=Math.atan2(-vc.x,-vc.z)-Math.atan2(-vg.x,-vg.z);
+  } else {
+    var e=new THREE.Euler().setFromQuaternion(camera.quaternion,"YXZ");
+    yaw=e.y; pitch=e.x;
+  }
+  var then=glide.thenFocus, rel=glide.release;
+  glide={active:false};
+  if(arrived){ if(rel){ setFocus(null); } else if(then){ setFocus(then); } }
+}
+
+/* ════════ PICKING — hover names, click to focus, click again to meet ════════ */
+var tip=document.getElementById("tip");
+var _pv=new THREE.Vector3(), _fwd=new THREE.Vector3(), _rel2=new THREE.Vector3();
+function screenPos(v){
+  camera.getWorldDirection(_fwd);
+  if(_rel2.copy(v).sub(camera.position).dot(_fwd)<=0) return null;   // behind you is the dark
+  _pv.copy(v).project(camera);
+  return { x:(_pv.x*0.5+0.5)*innerWidth, y:(-_pv.y*0.5+0.5)*innerHeight, z:_pv.z };
+}
+/* where a light actually IS on screen: base position + the same gentle drift the
+   shader applies — so clicking dead-centre on a firefly lands dead-centre */
+var _drift=new THREE.Vector3();
+function drawPosOf(base,phase){
+  return _drift.set(
+    base.x+Math.sin(t*0.13+phase)*6.0,
+    base.y+Math.cos(t*0.11+phase*1.7)*6.0,
+    base.z+Math.sin(t*0.09+phase*2.3)*5.0);
+}
+function pick(mx,my){
+  var best=null,bd=27*27,kind="star";
+  STARS.forEach(function(s){
+    var sp=screenPos(drawPosOf(posOf(s),s.phase)); if(!sp||sp.z>1||sp.z<-1) return;
+    var dx=sp.x-mx,dy=sp.y-my,d=dx*dx+dy*dy;
+    if(d<bd){ bd=d; best=s; kind="star"; }
+  });
+  HUBS.forEach(function(h){
+    var sp=screenPos(drawPosOf(h.pos,h.phase)); if(!sp||sp.z>1||sp.z<-1) return;
+    var dx=sp.x-mx,dy=sp.y-my,d=dx*dx+dy*dy;
+    if(d<bd){ bd=d; best=h; kind="hub"; }
+  });
+  return best?{obj:best,kind:kind}:null;
+}
+var hovered=null;
+function hoverStep(){
+  if(bloomOpen()||glide.active||dragging||(eggOn&&!gatherOn)){ tip.style.opacity=0; hovered=null; skyEl.style.cursor=""; return; }
+  var p=pick(mouseX,mouseY); hovered=p;
+  if(p){
+    skyEl.style.cursor="pointer";
+    var sp,label,sub="";
+    if(p.kind==="star"){ sp=screenPos(drawPosOf(posOf(p.obj),p.obj.phase)); label=esc(makerLabel(p.obj.work));
+      if(p.obj===focusStar) sub="touch again to meet them";
+    } else { sp=screenPos(drawPosOf(p.obj.pos,p.obj.phase)); label="⬡ "+esc(p.obj.witness); sub="a witness"; }
+    if(!sp){ tip.style.opacity=0; return; }
+    tip.innerHTML=label+(sub?'<span class="b">'+sub+"</span>":"");
+    tip.style.left=sp.x+"px"; tip.style.top=sp.y+"px"; tip.style.opacity=1;
+  } else { skyEl.style.cursor=""; tip.style.opacity=0; }
+}
+/* ════════ SNIPPETS — draw near a firefly and its work surfaces inside the glow ════════ */
+var SNIP_N=12, SNIP_D=640, snipEl=document.getElementById("snips"), snipPool=[], snipTick=0;
+(function(){ for(var i=0;i<SNIP_N;i++){ var im=document.createElement("img");
+  im.referrerPolicy="no-referrer"; im.loading="lazy"; im.alt="";
+  snipEl.appendChild(im); snipPool.push({img:im,star:null}); } })();
+var _sd=new THREE.Vector3();
+function snipStep(){
+  if((snipTick++%5)!==0) return;                           // every 5th frame is plenty
+  var hide=bloomOpen()||galEl.classList.contains("on")||(eggOn&&!gatherOn);
+  var near=[];
+  if(!hide){ for(var i=0;i<STARS.length;i++){ var s=STARS[i];
+    var d=_sd.copy(posOf(s)).sub(camera.position).length();
+    if(d<SNIP_D && d>36 && (s.litTarget===undefined||s.litTarget>0.5)) near.push({s:s,d:d}); } }
+  near.sort(function(a,b){ return a.d-b.d; });
+  for(var k=0;k<SNIP_N;k++){ var slot=snipPool[k], hit=near[k];
+    if(!hit){ slot.img.style.opacity=0; slot.star=null; continue; }
+    var sp=screenPos(drawPosOf(posOf(hit.s),hit.s.phase));
+    if(!sp||sp.z>1){ slot.img.style.opacity=0; slot.star=null; continue; }
+    if(slot.star!==hit.s){ slot.star=hit.s; slot.img.src=hit.s.work.img; }
+    var px=Math.max(26,Math.min(64,90*(300/hit.d)));       // closer = a little larger, never a poster
+    slot.img.style.width=px+"px"; slot.img.style.height=px+"px";
+    slot.img.style.left=sp.x+"px"; slot.img.style.top=sp.y+"px";
+    slot.img.style.opacity=(1-hit.d/SNIP_D)*0.8;
+  }
+}
+
+var downX=0,downY=0;
+addEventListener("pointerdown",function(e){
+  downX=e.clientX; downY=e.clientY;
+  if(e.target===skyEl && !bloomOpen()){
+    document.body.classList.add("explored");             // the welcome yields the centre
+    dragging=true; dragPX=e.clientX; dragPY=e.clientY; skyEl.classList.add("drag");
+  }
+});
+addEventListener("pointerup",function(e){
+  var wasDrag=Math.hypot(e.clientX-downX,e.clientY-downY)>6;
+  dragging=false; skyEl.classList.remove("drag");
+  if(bloomOpen()) return;
+  if(wasDrag) return;
+  if(e.target.closest("#threads")||e.target.closest("#searchwrap")||e.target.closest("#bloom")||
+     e.target.closest("#skytoggle")||e.target.closest("#quiet")||e.target.closest("#gallery")||
+     e.target.closest("#snips")) return;
+  if(eggOn&&!gatherOn){ clearEgg(); return; }                    // a drawing → any touch scatters it back to the field
+  if(glide.active) endGlide(false);                              // a touch ends the ride — and still lands
+  var p=pick(e.clientX,e.clientY);
+  if(gatherOn&&!p){ clearEgg(); return; }                        // a figure → touching the empty sky lets it go
+  if(p&&p.kind==="star"){
+    var s=p.obj;
+    if(focusStar===s){ openWork(s.work); }                       // second touch → meet them
+    else if(focusStar && kinStars.indexOf(s)>=0){ setFocus(s); }  // a kin star → their thread lights; you fly yourself
+    else { setFocus(s); }                                        // first touch → their thread only
+  } else if(p&&p.kind==="hub"){
+    /* touching a witness-sun always does something: focus a work they witnessed and light
+       their eyes-thread (the sunburst to everything they saw) — from wherever you are */
+    var h=p.obj, rep=(h.idxs&&h.idxs.length)?STARS[h.idxs[0]]:null;
+    if(rep){ selKind=KINDS[1]; setFocus(rep); } else { setFocus(null); }
+  } else { setFocus(null); }                                     // touch the dark → release
+});
+
+/* ════════ LIGHTBOX — meeting someone ════════ */
+var bloom=document.getElementById("bloom"), bsay=document.getElementById("bsay");
+var bwrapEl=document.getElementById("bwrap"), brel=document.getElementById("brel");
+var bhead=document.getElementById("bhead"), bwords=document.getElementById("bwords"), bfoot=document.getElementById("bfoot");
+var REL_SHOWN=7;                       // enough to feel like company, few enough to stay calm
+var HEX='<svg width="12" height="13" viewBox="0 0 12 13" aria-hidden="true"><path d="M6 .7 11 3.4v6.2L6 12.3 1 9.6V3.4z" fill="none" stroke="#C3BD8E" stroke-width="1.1"/></svg>';
+var activeRelKey=null, currentWork=null;
+function bloomOpen(){ return bloom.classList.contains("on"); }
+(function seedMotes(){ for(var i=0;i<10;i++){ var m=document.createElement("div"); m.className="mote";
+  m.style.left=(8+Math.random()*84)+"%"; m.style.top=(10+Math.random()*80)+"%";
+  m.style.animationDuration=(6+Math.random()*8)+"s"; m.style.animationDelay=(-Math.random()*8)+"s";
+  m.style.opacity=(.28+Math.random()*.5); bloom.appendChild(m); } })();
+function markThreads(key){ bsay.querySelectorAll(".kt2").forEach(function(c){ c.classList.toggle("on", c.dataset.k===key); }); }
+/* A row has to say something the eye can tell apart. Down "the same hand" every work is
+   by the same person, so repeating their name five times says nothing — use the opening
+   of their own words instead. Down the other threads the NAME is the whole point. */
+function rowLabel(x,k){
+  if(k.key!=="hand") return makerLabel(x);
+  var lines=(x.full||"").split("\n").map(function(s){ return s.trim(); })
+    /* skip the greeting everyone opens with ("Gm", "Gm Gm Outsiders!") — it is warm in
+       place but tells you nothing about which work this is */
+    .filter(function(s){ return s.length>3 && !(s.length<=26 && /^(gm|good morning|hey|hello|hi)\b/i.test(s)); });
+  var s=(lines[0]||"").replace(/\s+/g," ");
+  if(!s) return makerLabel(x);
+  return s.length>44 ? s.slice(0,43).replace(/[\s,;:.]+$/,"")+"…" : s;
+}
+function closeRel(){ bsay.classList.remove("showrel"); brel.innerHTML=""; activeRelKey=null; markThreads(null); markScrollSoon(); }
+function openRel(w,k){
+  /* the kin take the WORDS' place — same column, same width, image untouched. A calm
+     list of a few people beats a contact sheet: this is meeting, not browsing. */
+  var rel=relatedTo(w,k), shown=rel.slice(0,REL_SHOWN);
+  brel.innerHTML='<div class="rhead">'+esc(k.panelTitle)+'</div>'
+    +shown.map(function(x){ return '<div class="rrow" data-d="'+x.drop+'">'
+      +'<img loading="lazy" referrerpolicy="no-referrer" src="'+x.img+'" alt="">'
+      +'<span class="rn">'+esc(rowLabel(x,k))+'</span></div>'; }).join("")
+    +(rel.length>shown.length? '<p class="rmore">…and others, along the thread</p>' : "");
+  brel.querySelectorAll(".rrow").forEach(function(el){ el.addEventListener("click",function(){
+    var nx=WORKS.find(function(y){ return y.drop===el.dataset.d; }); if(nx) navigate(nx); }); });
+  bsay.classList.add("showrel"); activeRelKey=k.key;
+  markThreads(k.key);
+  brel.scrollTop=0;
+}
+/* The words only get their fade-out edge when there is genuinely more below — otherwise
+   a short entry looks truncated mid-sentence. Measured after a frame as well as inline,
+   because the column has not settled at the moment the lightbox is switched on. */
+function markScroll(){ bwords.classList.toggle("scrolls", bwords.scrollHeight-bwords.clientHeight>4); }
+function markScrollSoon(){ markScroll(); requestAnimationFrame(markScroll); }
+bwords.addEventListener("scroll",markScroll);
+addEventListener("resize",markScroll);
+function toggleRel(w,k){ if(activeRelKey===k.key) closeRel(); else openRel(w,k); }
+function navigate(w){ var keep=activeRelKey; openWork(w);
+  if(keep){ var k=KINDS.find(function(x){ return x.key===keep; }); if(k && relatedTo(w,k).length) openRel(w,k); }
+  var s=STARBY[w.drop]; if(s) setFocus(s);   // the thread stays lit; the world stays put
+}
+function closeBloom(){ closeRel(); bloom.classList.remove("on"); }
+function openWork(w){
+  currentWork=w;
+  document.getElementById("bimg").src=w.img;
+  var wit=w.witnesses.map(function(x){ return HEX+' <b>'+esc(x)+'</b>'; }).join("&nbsp;&nbsp;");
+  var kinds=KINDS.filter(function(k){ return relatedTo(w,k).length; });
+  var threads=kinds.length? '<div class="threads2"><span class="lead">follow</span>'
+    +kinds.map(function(k){ return '<span class="kt2" data-k="'+k.key+'"><span class="cdot" style="color:'+k.color+'"></span>'+esc(k.chipLabel)+'</span>'; }).join("")+'</div>' : "";
+
+  bhead.innerHTML='<p class="eyebrow2">an OUTSIDER</p><h2 class="maker">'+esc(makerLabel(w))+'</h2>';
+  bwords.textContent=w.full||"";
+  bfoot.innerHTML=threads
+    +'<div class="seal">witnessed by '+wit+' <span class="sep">·</span> <a href="'+dropUrl(w)+'" target="_blank" rel="noopener">read on 6529 ↗</a></div>'
+    +'<div class="keep" data-keep="1">'+(isKept(w)?"⬡ kept — release it":"⬡ keep this")+'</div>';
+
+  bsay.classList.remove("showrel"); brel.innerHTML=""; activeRelKey=null;
+  bfoot.querySelector("[data-keep]").addEventListener("click",function(){
+    toggleKept(w); this.textContent=isKept(w)?"⬡ kept — release it":"⬡ keep this"; });
+  bfoot.querySelectorAll(".kt2").forEach(function(c){ c.addEventListener("click",function(){
+    toggleRel(w,KINDS.find(function(x){ return x.key===c.dataset.k; })); }); });
+  bloom.classList.add("on");
+  markScrollSoon();
+}
+document.getElementById("bclose").addEventListener("click",closeBloom);
+bloom.addEventListener("click",function(e){ if(e.target===bloom||e.target.classList.contains("veilbg")) closeBloom(); });
+/* a closer look at the work itself */
+var bzoom=document.getElementById("bzoom"), bzimg=document.getElementById("bzimg");
+document.getElementById("bimg").addEventListener("click",function(){
+  if(!currentWork) return; bzimg.src=currentWork.img; bzoom.classList.add("on"); });
+bzoom.addEventListener("click",function(){ bzoom.classList.remove("on"); });
+function onEscape(){
+  if(bzoom.classList.contains("on")){ bzoom.classList.remove("on"); return; } // the look → the meeting
+  if(galEl.classList.contains("on")){ closeGallery(); return; }               // the gallery → the field
+  if(bloomOpen()){ if(activeRelKey) closeRel(); else closeBloom(); return; }  // panel → lightbox → field
+  if(acEl.classList.contains("on")){ hideAC(); searchInput.blur(); return; }
+  if(eggOn){ clearEgg(); return; }                                           // a formation → let it scatter back to the field
+  /* below the overlays, ESC means one thing, always: take me home */
+  if(glide.active) endGlide(false);
+  if(arrivalT<1) arrivalT=1;                                                  // even mid-arrival, never trapped
+  setFocus(null); glideHome();
+}
+
+/* ════════ SECRET STAR-FORMATIONS ("drone show") — type a name, the field becomes a shape ════════
+   For people who know the community. Type a codeword (baked from drawings/<name>.svg into
+   data/eggs.js) anywhere in the field: the camera glides back to the lander vantage and the
+   work-stars fly into that drawing. Invisible until it happens. ESC or a touch scatters them home.
+   Reuses the sky-morph machinery (aEggPos + uEggMix) — one draw call, no new geometry. */
+var EGGS=window.EGGS||{};
+var EGG_Z=250, EGG_SCALE=720;                 // the formation faces the lander, in front of the cloud (feel-knobs)
+var eggOn=false, eggCode=null, eggScatter=false, eggPending=null;
+function resampleEgg(pts,n){ var o=[],m=pts.length-1||1; for(var i=0;i<n;i++) o.push(pts[Math.round(i*m/(n-1||1))]); return o; }
+function buildEggTargets(code){                 // → Float32Array of per-star formation targets, or null
+  var e=EGGS[code]; if(!e||!e.pts||!e.pts.length) return null;
+  var n=STARS.length, tp=resampleEgg(e.pts,n), out=new Float32Array(n*3);
+  var tw=new Array(n); for(var i=0;i<n;i++){ tw[i]=[tp[i][0]*EGG_SCALE, tp[i][1]*EGG_SCALE]; }
+  if(n<=2000){                                 // greedy nearest → each star flies a short way (clean formation, no long crossings)
+    var used=new Uint8Array(n);
+    for(var si=0;si<n;si++){ var s=STARS[si],hx=s.home.x,hy=s.home.y,bi=-1,bd=1e18;
+      for(var k=0;k<n;k++){ if(used[k])continue; var dx=tw[k][0]-hx,dy=tw[k][1]-hy,d=dx*dx+dy*dy; if(d<bd){bd=d;bi=k;} }
+      used[bi]=1; out[si*3]=tw[bi][0]; out[si*3+1]=tw[bi][1]; out[si*3+2]=EGG_Z; }
+  } else {                                      // at big scale, skip the O(n^2) match — index order is fine
+    for(var j=0;j<n;j++){ out[j*3]=tw[j][0]; out[j*3+1]=tw[j][1]; out[j*3+2]=EGG_Z; }
+  }
+  return out;
+}
+function applyEggTargets(arr){ var a=starGeo.getAttribute("aEggPos"); a.array.set(arr); a.needsUpdate=true; }
+function formEgg(code){
+  var tgt=buildEggTargets(code); if(!tgt) return;
+  eggCode=code;
+  if(eggOn && starMat.uniforms.uEggMix.value>0.15){
+    /* a shape is already up → SCRAMBLE between the two: scatter back to the field, then re-form.
+       (uEggMix eases to 0, then applyEggTargets swaps in the new shape and it eases back to 1 — same cascade as the first form) */
+    eggPending=tgt; eggScatter=true;
+  } else {
+    applyEggTargets(tgt); eggScatter=false; eggPending=null;   // from rest → form straight away
+  }
+  eggOn=true;
+  setFocus(null);                               // clear ribbons/focus → a clean sky for the reveal
+  if(arrivalT<1) arrivalT=1;                     // works even if typed mid-arrival; never trapped
+  glideToVantage();                             // zoom back to the lander perspective (no menu) — smooth & reliable from anywhere
+}
+function clearEgg(){ eggOn=false; eggScatter=false; eggPending=null;
+  if(gatherOn){ gatherOn=false; gatherWho=null; gatherSet=[]; gatherEdges=[]; gatherConName="";
+    STARS.forEach(function(s){ s.gpos=null; s.gcore=false; });
+    setFocus(null); }                            // threads let go with the figure
+}
+
+/* ════════ THE GATHER — a searched name draws its constellation in front of you ════════
+   Flying the camera TO a person can never compose their network: their kin are scattered
+   through a 1600-deep volume, so wherever you park, some of it is behind you and the rest
+   converges on the very point you are standing in. So the network comes to the VIEWER
+   instead — their works and the people they reach ease onto a plane facing the lander.
+   Each star keeps the BEARING it already had from the person, and only its distance is
+   compressed, so every figure is that person's own and the field's geography survives.
+   This is the gesture of lying on your back joining stars into a shape: nothing zooms.
+
+   Reuses the egg morph wholesale (aEggPos + uEggMix, staggered ascent, scramble-between)
+   — one draw call, no new geometry. Stars outside the figure keep home as their target,
+   so they simply do not move. */
+var GATHER_Z=EGG_Z, GATHER_R=380, GATHER_INNER=0.10;   // feel-knobs: depth, radius, core tightness
+var GATHER_PEOPLE=20, GATHER_WORKS=24;                 // caps are counted, never shown
+var GATHER_CORE_LIT=1.9;                               // the searched person's OWN works burn brighter than the ring they reach (aLit>1 blooms; feel-knob)
+
+function worksOf(name,role){
+  return WORKS.filter(role==="witness"
+    ? function(w){ return w.witnesses.indexOf(name)>=0; }
+    : function(w){ return w.makers.indexOf(name)>=0; }).slice(0,GATHER_WORKS);
+}
+/* One work standing for each OTHER person the lit thread reaches — so a figure is made of
+   people, not files. Without this most makers gather as a single light (they have one
+   work), and "the same eyes" would drag in everything one witness ever saw. */
+function peopleAround(own,k){
+  var mine={}, seenWho={}, reps=[];
+  own.forEach(function(w){ mine[w.drop]=1; (w.makers||[]).forEach(function(m){ seenWho[m]=1; }); });
+  for(var i=0;i<WORKS.length && reps.length<GATHER_PEOPLE;i++){
+    var x=WORKS[i]; if(mine[x.drop]) continue;
+    var who=(x.makers&&x.makers[0])||("~"+x.drop);      // an outsider stands for themselves
+    if(seenWho[who]) continue;
+    var linked=own.some(function(w){ return k.test(w,x)||k.test(x,w); });
+    if(!linked) continue;
+    seenWho[who]=1; reps.push(x);
+  }
+  return reps;
+}
+function gatherFor(name,role){
+  var own=worksOf(name,role); if(!own.length) return;
+  var k=selKind||KINDS[0];
+  var ring=peopleAround(own,k);
+  /* "the same hand" only ever reaches this person's OWN works, which are already the core.
+     For someone prolific that is a figure in itself. For the 34 makers who have a single
+     work it is one lonely light — so LIGHT A DIFFERENT THREAD rather than just borrowing a
+     ring from it: the ribbons must reach the people the figure shows, or the ring reads as
+     unrelated background. */
+  if(!ring.length && own.length<4){
+    for(var ki=0; ki<KINDS.length; ki++){
+      if(KINDS[ki]===k) continue;
+      var alt=peopleAround(own,KINDS[ki]);
+      if(alt.length){ k=KINDS[ki]; ring=alt; break; }
+    }
+  }
+
+  /* THE STARS TAKE THE SHAPE OF A REAL CONSTELLATION (Tier A). Their own works and the
+     people they reach are placed evenly along a named figure's lines — the same catalogue
+     tonight's sky draws — chosen by the person's name so it is always theirs. The figure's
+     real edges (stored for computeFocus) are what get drawn, and the stars lie on them. */
+  var con=constellationFor(name);
+  var members=[];                                                 // who gathers, core first (their own works)
+  own.forEach(function(w){ var s=STARBY[w.drop]; if(s) members.push({ s:s, core:true }); });
+  ring.forEach(function(w){ var s=STARBY[w.drop]; if(s) members.push({ s:s, core:false }); });
+
+  var out=new Float32Array(STARS.length*3);
+  STARS.forEach(function(s,i){ s.gpos=null; s.gcore=false;        // everyone else stays exactly where they are
+    out[i*3]=s.home.x; out[i*3+1]=s.home.y; out[i*3+2]=s.home.z; });
+  gatherSet=[]; gatherEdges=[]; gatherConName="";
+
+  if(con){
+    gatherConName=con.name;
+    var tp=resampleConstellation(con, members.length).map(function(p){
+      return { x:p.x*GATHER_R, y:p.y*GATHER_R }; });
+    /* greedy nearest-neighbour from each star's resting position → short travel, clean
+       formation, no long crossings (the same idea formEgg uses). */
+    var usedT={};
+    members.forEach(function(m){
+      var hx=m.s.home.x, hy=m.s.home.y, bi=-1, bd=Infinity;
+      for(var ti=0;ti<tp.length;ti++){ if(usedT[ti]) continue;
+        var dx=tp[ti].x-hx, dy=tp[ti].y-hy, d=dx*dx+dy*dy; if(d<bd){ bd=d; bi=ti; } }
+      if(bi<0) return; usedT[bi]=1;
+      var t=tp[bi];
+      out[m.s.i*3]=t.x; out[m.s.i*3+1]=t.y; out[m.s.i*3+2]=GATHER_Z;
+      m.s.gpos=new THREE.Vector3(t.x,t.y,GATHER_Z);
+      m.s.gcore=m.core;                                           // their own works burn brighter (see computeFocus)
+      gatherSet.push(m.s);
+    });
+    con.edges.forEach(function(e){
+      var a=con.verts[e[0]], b=con.verts[e[1]];
+      gatherEdges.push([ new THREE.Vector3(a.x*GATHER_R, a.y*GATHER_R, GATHER_Z),
+                         new THREE.Vector3(b.x*GATHER_R, b.y*GATHER_R, GATHER_Z) ]);
+    });
+  } else {
+    /* no constellation data (e.g. sky.js absent) → fall back to the radial figure + MST */
+    var cx=0,cy=0; own.forEach(function(w){ cx+=w.nx; cy+=(1-w.ny); }); cx/=own.length; cy/=own.length;
+    function bearings(list){ return list.map(function(w){
+      var dx=w.nx-cx, dy=(1-w.ny)-cy, r=Math.sqrt(dx*dx+dy*dy);
+      if(r<1e-4){ return { w:w, a:(hash(w.drop)%628)/100, r:0 }; }
+      return { w:w, a:Math.atan2(dy,dx), r:r }; }); }
+    function place(list,rIn,rOut,isCore){
+      var v=bearings(list), rmax=v.reduce(function(m,o){ return o.r>m?o.r:m; },0);
+      v.forEach(function(o,i){ var s=STARBY[o.w.drop]; if(!s) return;
+        var f=rmax>1e-6 ? o.r/rmax : (v.length>1 ? i/(v.length-1) : 0);
+        var R=(v.length===1&&rIn<1) ? 0 : rIn+(rOut-rIn)*f;
+        var x=Math.cos(o.a)*R, y=Math.sin(o.a)*R;
+        out[s.i*3]=x; out[s.i*3+1]=y; out[s.i*3+2]=GATHER_Z;
+        s.gpos=new THREE.Vector3(x,y,GATHER_Z); s.gcore=!!isCore; gatherSet.push(s); });
+    }
+    place(own, GATHER_R*GATHER_INNER, ring.length?GATHER_R*0.40:GATHER_R*0.94, true);
+    if(ring.length) place(ring, GATHER_R*0.62, GATHER_R, false);
+  }
+
+  if(eggOn && starMat.uniforms.uEggMix.value>0.15){ eggPending=out; eggScatter=true; } // scatter, then re-gather
+  else { applyEggTargets(out); eggScatter=false; eggPending=null; }
+  eggOn=true; gatherOn=true; gatherWho={name:name,role:role};
+  if(arrivalT<1) arrivalT=1;                                       // works mid-arrival; never trapped
+  selKind=k;
+  var first=STARBY[own[0].drop]||null;
+  setFocus(first);                                                 // their menu, their threads
+  glideToVantage();                                                // only ever brings you HOME to see it
+  /* glideToVantage releases focus on arrival (right for a drawing, wrong for a person) */
+  glide.release=false; glide.thenFocus=first;
+}
+
+/* the invisible ends-with keystroke buffer — nothing is drawn as you type; it just resolves (or doesn't) */
+var eggBuf="", eggIdle=0, EGG_IDLE=1000;         // buffer clears 1s after you stop typing (see egg-demo)
+addEventListener("keydown",function(e){
+  if(e.key==="Escape") return;                   // ESC is handled by onEscape
+  var ae=document.activeElement; if(ae&&(ae.tagName==="INPUT"||ae.tagName==="TEXTAREA")) return; // don't capture search typing
+  if(e.key==="Backspace") eggBuf=eggBuf.slice(0,-1);
+  else if(e.key.length===1) eggBuf=(eggBuf+e.key).slice(-24);
+  else return;
+  clearTimeout(eggIdle); eggIdle=setTimeout(function(){ eggBuf=""; }, EGG_IDLE);
+  var low=eggBuf.toLowerCase(), hit=null;
+  /* take the LONGEST codeword the tail matches, never merely the first one found:
+     once the roster grows, one name ending inside another ("ear" inside "bear")
+     would otherwise fire the wrong shape depending on key order. */
+  for(var code in EGGS){ if(code && low.length>=code.length && low.slice(low.length-code.length)===code
+    && (!hit || code.length>hit.length)) hit=code; }
+  if(hit){ eggBuf=""; clearTimeout(eggIdle); formEgg(hit); }
+});
+
+/* ════════ YOUR GALLERY — keep works you love; look at them side by side ════════
+   A private shelf, not a leaderboard: no counts shown, kept in this browser. */
+var KEPT=(function(){ try{ return JSON.parse(localStorage.getItem("outsiders_kept")||"[]"); }catch(e){ return []; } })();
+function keptSave(){ try{ localStorage.setItem("outsiders_kept",JSON.stringify(KEPT)); }catch(e){} }
+function isKept(w){ return KEPT.indexOf(w.drop)>=0; }
+function toggleKept(w){ var i=KEPT.indexOf(w.drop); if(i>=0) KEPT.splice(i,1); else KEPT.push(w.drop); keptSave(); }
+var galEl=document.getElementById("gallery"), ggrid=document.getElementById("ggrid");
+function renderGallery(){
+  var kept=KEPT.map(function(d){ return WORKS.find(function(w){ return w.drop===d; }); }).filter(Boolean);
+  ggrid.innerHTML = kept.length
+    ? kept.map(function(w){ return '<div class="gt" data-d="'+w.drop+'">'+
+        '<img loading="lazy" referrerpolicy="no-referrer" src="'+w.img+'" alt="">'+
+        '<div class="gn">'+esc(makerLabel(w))+'</div></div>'; }).join("")
+    : '<p class="gsub" style="font-size:15px;max-width:44ch">nothing here yet — when you meet a work you love, choose <i>⬡ keep this</i>, and it will wait for you here.</p>';
+  ggrid.querySelectorAll(".gt").forEach(function(el){ el.addEventListener("click",function(){
+    var w=WORKS.find(function(x){ return x.drop===el.dataset.d; });
+    if(w){ closeGallery(); openWork(w); } }); });
+}
+function openGallery(){ renderGallery(); galEl.classList.add("on"); }
+function closeGallery(){ galEl.classList.remove("on"); }
+document.getElementById("galtoggle").addEventListener("click",openGallery);
+document.getElementById("gclose").addEventListener("click",closeGallery);
+galEl.addEventListener("click",function(e){ if(e.target.classList&&e.target.classList.contains("gbg")) closeGallery(); });
+
+/* ════════ SEARCH — find a friend; essential at thousands ════════ */
+var searchInput=document.getElementById("search"), acEl=document.getElementById("ac");
+/* One entry per PERSON. The old two-guard version was order-dependent: anyone seen as a
+   witness before their own work came round was registered under both roles and appeared
+   twice in the search (dougfriesen and Articulate both did). Gather roles first, then
+   emit once — and if someone both makes and witnesses, take them to their own work. */
+var NAMES=(function(){ var role={},order=[];
+  WORKS.forEach(function(w){
+    w.makers.forEach(function(m){ if(!role[m]){ role[m]={}; order.push(m); } role[m].maker=1; });
+    w.witnesses.forEach(function(x){ if(!role[x]){ role[x]={}; order.push(x); } role[x].witness=1; }); });
+  var out=order.map(function(n){ return {name:n, role:role[n].maker?"maker":"witness"}; });
+  out.sort(function(a,b){ return a.name.toLowerCase()<b.name.toLowerCase()?-1:1; }); return out;
+})();
+var acSel=-1, acItems=[];
+function hideAC(){ acEl.classList.remove("on"); acEl.innerHTML=""; acSel=-1; acItems=[]; }
+function showAC(q){
+  q=q.trim().toLowerCase(); if(!q){ hideAC(); return; }
+  acItems=NAMES.filter(function(n){ return n.name.toLowerCase().indexOf(q)>=0; }).slice(0,8);
+  if(!acItems.length){ hideAC(); return; }
+  acEl.innerHTML=acItems.map(function(n,i){
+    return '<div class="it" data-i="'+i+'">'+esc(n.name)+'<span class="who">'+(n.role==="witness"?"witness":"maker")+"</span></div>"; }).join("");
+  acEl.classList.add("on"); acSel=-1;
+  acEl.querySelectorAll(".it").forEach(function(el){ el.addEventListener("click",function(){ chooseName(acItems[+el.dataset.i]); }); });
+}
+/* Searching a name no longer flies you anywhere — it draws that person's constellation
+   in front of the lander. A witness is read through their own eyes-thread. */
+function chooseName(n){
+  hideAC(); searchInput.value=""; searchInput.blur();
+  document.body.classList.add("explored");
+  if(n.role==="witness") selKind=KINDS[1];
+  else selKind=selKind||KINDS[0];
+  gatherFor(n.name,n.role);
+}
+searchInput.addEventListener("input",function(){ showAC(searchInput.value); });
+searchInput.addEventListener("keydown",function(e){
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){ e.preventDefault();
+    if(!acItems.length) return;
+    acSel=(acSel+(e.key==="ArrowDown"?1:-1)+acItems.length)%acItems.length;
+    acEl.querySelectorAll(".it").forEach(function(el,i){ el.classList.toggle("sel",i===acSel); });
+  } else if(e.key==="Enter"){ if(acSel>=0) chooseName(acItems[acSel]);
+    else if(acItems.length===1) chooseName(acItems[0]);
+  } else if(e.key==="Escape"){ e.stopPropagation(); hideAC(); searchInput.blur(); }
+});
+document.addEventListener("pointerdown",function(e){ if(!e.target.closest("#searchwrap")) hideAC(); });
+
+/* ════════ THE RAIN — opt-in generative audio; never autoplays ════════
+   Card 347 is rain-lit. A soft rain drone under everything; every person is a
+   note (their handle, hashed to a pentatonic degree — no name is louder than
+   another); a lit kinship hums its people, one at a time. Opt-in only. */
+var AUDIO=(function(){
+  var ctx=null, master=null, on=false;
+  var el=document.getElementById("audiotoggle");
+  var SCALE=[0,3,5,7,10,12,15,17,22];              // minor pentatonic, two octaves
+  var BASE=110;
+  function noteOf(name){ return BASE*Math.pow(2,(SCALE[hash(name)%SCALE.length]+12)/12); }
+  function build(){
+    var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return false;
+    try{ ctx=new AC(); }catch(e){ return false; }
+    master=ctx.createGain(); master.gain.value=0; master.connect(ctx.destination);
+    /* the rain: looped noise through a slow-breathing lowpass */
+    var n=ctx.sampleRate*2, buf=ctx.createBuffer(1,n,ctx.sampleRate), d=buf.getChannelData(0);
+    for(var i=0;i<n;i++) d[i]=Math.random()*2-1;
+    var rain=ctx.createBufferSource(); rain.buffer=buf; rain.loop=true;
+    var lp=ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=520; lp.Q.value=0.5;
+    var lfo=ctx.createOscillator(); lfo.frequency.value=0.06;
+    var lfoG=ctx.createGain(); lfoG.gain.value=160;
+    lfo.connect(lfoG); lfoG.connect(lp.frequency);
+    var rg=ctx.createGain(); rg.gain.value=0.055;
+    rain.connect(lp); lp.connect(rg); rg.connect(master);
+    rain.start(); lfo.start();
+    /* a deep pad the notes rest on */
+    var pad=ctx.createOscillator(); pad.type="sine"; pad.frequency.value=BASE/2;
+    var padG=ctx.createGain(); padG.gain.value=0.028;
+    pad.connect(padG); padG.connect(master); pad.start();
+    dropAt=ctx.currentTime+3;
+    return true;
+  }
+  function tone(freq,vol,dur,delay){
+    if(!on||!ctx) return;
+    var t0=ctx.currentTime+(delay||0);
+    var g=ctx.createGain();
+    g.gain.setValueAtTime(0.0001,t0);
+    g.gain.linearRampToValueAtTime(vol,t0+0.04);   // instant voice — play tunes as fast as you touch
+    g.gain.exponentialRampToValueAtTime(0.0004,t0+dur);
+    g.connect(master);
+    [0,4].forEach(function(det){                    // two soft voices, barely apart
+      var o=ctx.createOscillator(); o.type="sine"; o.frequency.value=freq; o.detune.value=det;
+      o.connect(g); o.start(t0); o.stop(t0+dur+0.1);
+    });
+  }
+  /* the kinship arpeggio — the lit thread sounds its people, unhurried */
+  var arp=[], arpAt=0, arpI=0, dropAt=0;
+  function kinship(stars,focus){
+    arp=[]; arpI=0; var seen={};
+    (focus?[focus]:[]).concat(stars||[]).forEach(function(s){
+      var m=s.work.makers[0]||s.work.drop;
+      if(!seen[m]){ seen[m]=1; arp.push(noteOf(m)); } });
+    arp=arp.slice(0,9);
+    if(ctx) arpAt=ctx.currentTime+1.2;
+  }
+  function person(s){ if(s) tone(noteOf(s.work.makers[0]||s.work.drop),0.09,3.5,0); } // voices overlap freely
+  function portal(){ tone(BASE*2,0.07,1.6,0); tone(BASE*3,0.06,2.2,0.28); tone(BASE*4,0.05,2.8,0.62); }
+  function step(){
+    if(!on||!ctx) return;
+    var now=ctx.currentTime;
+    if(arp.length&&now>=arpAt){
+      tone(arp[arpI%arp.length],0.045,2.8,0.02);
+      arpI++; arpAt=now+1.15+Math.random()*0.7;
+    }
+    if(now>=dropAt){                                // a stray droplet, now and then
+      tone(BASE*8*(1+Math.random()*0.9),0.014,0.5,0);
+      dropAt=now+2.5+Math.random()*5;
+    }
+  }
+  function setOn(v){
+    if(v&&!ctx&&!build()){ el.style.display="none"; return; }   // no WebAudio → offer nothing
+    on=v;
+    if(ctx.state==="suspended") ctx.resume();
+    var t0=ctx.currentTime;
+    master.gain.cancelScheduledValues(t0);
+    master.gain.setValueAtTime(Math.max(master.gain.value,0.0001),t0);
+    master.gain.linearRampToValueAtTime(v?0.85:0.0001,t0+(v?2.4:1.1));
+    el.innerHTML=v?"♪&nbsp; hush":"♪&nbsp; let it rain";
+  }
+  el.addEventListener("click",function(){ setOn(!on); });
+  document.addEventListener("visibilitychange",function(){
+    if(!ctx||!on) return;
+    if(document.hidden) ctx.suspend(); else ctx.resume();
+  });
+  return { person:person, kinship:kinship, portal:portal, step:step };
+})();
+
+/* ════════ THE PHONE'S EYES — gyroscope look on touch devices (opt-in) ════════
+   Hold the phone up and the constellation is where you point it — the same
+   gesture as Card 347 itself. iOS asks permission; we ask only on the tap. */
+var IS_TOUCH=document.documentElement.classList.contains("touch");
+if(IS_TOUCH) document.querySelector(".hint").textContent=
+  "drag to look · rest two fingers to drift forward · tap a light to meet someone";
+var GYRO=(function(){
+  var el=document.getElementById("gyrotoggle");
+  var G={active:false,have:false,q:new THREE.Quaternion()};
+  if(!IS_TOUCH||!window.DeviceOrientationEvent){ el.style.display="none"; return G; }
+  var zee=new THREE.Vector3(0,0,1), eul=new THREE.Euler(), qs=new THREE.Quaternion(),
+      q1=new THREE.Quaternion(-Math.sqrt(0.5),0,0,Math.sqrt(0.5)), D2R=Math.PI/180;
+  function sAngle(){ return (((screen.orientation&&screen.orientation.angle)||window.orientation||0))*D2R; }
+  function onOri(e){
+    if(e.alpha===null||e.alpha===undefined) return;
+    G.have=true;
+    eul.set(e.beta*D2R,e.alpha*D2R,-e.gamma*D2R,"YXZ");
+    G.q.setFromEuler(eul).multiply(q1).multiply(qs.setFromAxisAngle(zee,-sAngle()));
+  }
+  function start(){ addEventListener("deviceorientation",onOri,true);
+    G.active=true; yaw=0; pitch=0; el.innerHTML="✧&nbsp; drag instead"; }
+  function stop(){ removeEventListener("deviceorientation",onOri,true);
+    if(G.have){ var e2=new THREE.Euler().setFromQuaternion(camera.quaternion,"YXZ"); yaw=e2.y; pitch=e2.x; }
+    G.active=false; G.have=false; el.innerHTML="✧&nbsp; look with your phone"; }
+  el.addEventListener("click",function(){
+    if(G.active){ stop(); return; }
+    if(typeof DeviceOrientationEvent.requestPermission==="function"){
+      DeviceOrientationEvent.requestPermission()
+        .then(function(r){ if(r==="granted") start(); })
+        .catch(function(){ el.style.display="none"; });
+    } else start();
+  });
+  return G;
+})();
+/* two fingers resting on the sky = drift forward (release and you hang, as ever) */
+var twoFinger=false;
+addEventListener("touchstart",function(e){
+  if(e.touches.length>=2){ twoFinger=true; if(glide.active) endGlide(false); } },{passive:true});
+addEventListener("touchend",function(e){ if(e.touches.length<2) twoFinger=false; },{passive:true});
+addEventListener("touchcancel",function(){ twoFinger=false; },{passive:true});
+
+/* ════════ THE PORTAL — fly into the phone's screen, emerge outside again ════════
+   Card 347 is a hand photographing art into the world. The screen is a door:
+   pass through it and you are back at the beginning, looking at the photograph. */
+var PORTAL=(function(){
+  var d=36, SC=STAR_Z_MIN+STAR_Z_SPAN*0.5, SR=STAR_Z_SPAN*0.5*1.10,
+      z=SC+(0.5-d/255)*2*SR;                        // the phone's depth — same sphere mapping as the cloud body
+  var s=(D_VANTAGE-z)/D_VANTAGE;
+  return { z:z,
+    x0:(172/384-0.5)*WORLD_W*s, x1:(218/384-0.5)*WORLD_W*s,
+    y0:(0.5-164/256)*WORLD_H*s, y1:(0.5-86/256)*WORLD_H*s };
+})();
+var portalMat=new THREE.ShaderMaterial({
+  transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, side:THREE.DoubleSide,
+  uniforms:{ uT:{value:0}, uNear:{value:0} },
+  vertexShader:
+    "varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }",
+  fragmentShader:
+    "uniform float uT,uNear; varying vec2 vUv;\n"+
+    "void main(){\n"+
+    "  vec2 q=vUv-.5; float r=length(q*vec2(1.,1.6));\n"+
+    "  float glow=exp(-r*r*5.5);\n"+
+    "  float breath=.55+.45*sin(uT*.8);\n"+
+    "  float a=glow*(.045+.05*breath+.22*uNear);\n"+   // brightens as you near the door
+    "  gl_FragColor=vec4(vec3(1.,.93,.72),a);\n"+
+    "}"
+});
+var portalPlane=new THREE.Mesh(
+  new THREE.PlaneGeometry(PORTAL.x1-PORTAL.x0,(PORTAL.y1-PORTAL.y0)),portalMat);
+portalPlane.position.set((PORTAL.x0+PORTAL.x1)/2,(PORTAL.y0+PORTAL.y1)/2,PORTAL.z);
+scene.add(portalPlane);
+function portalStep(){
+  /* the phone's screen still shimmers as you near it — a door left ajar, decorative now */
+  var cz=camera.position.z;
+  var dx=camera.position.x-portalPlane.position.x, dy=camera.position.y-portalPlane.position.y,
+      dz=cz-PORTAL.z, dd=Math.sqrt(dx*dx+dy*dy+dz*dz);
+  portalMat.uniforms.uNear.value+=((dd<420?1-dd/420:0)-portalMat.uniforms.uNear.value)*0.05;
+}
+
+/* ════════ TONIGHT'S SKY — the witnessed works form the constellations above YOU ════════
+   Same community, different sky in Lisbon and in Sydney: de-centering, made planetary. */
+var SKY=window.SKY347||null;
+
+/* ════════ CONSTELLATION FIGURES — the shapes a searched name is written into ════════
+   THE GATHER used to join a person's stars with a minimum spanning tree: a real shape,
+   but an arbitrary one. Instead, write each person into a REAL, NAMED constellation —
+   the same 88 line-figures tonight's sky is drawn from. The sky data is one big graph;
+   split it into connected components so each is one clean, recognisable drawing, name
+   each by the catalogue centre nearest its centroid, and keep a good-sized range (tiny
+   fragments read as nothing; the 30+ edge blobs are several merged constellations).
+   Which figure a person gets is fixed by their NAME, so Hoizon is always the same
+   constellation — an identity, not a random arrangement. Built once, from baked data. */
+var CONSTS=(function(){
+  if(!SKY||!SKY.v||!SKY.e) return [];
+  var Vn=SKY.v.length/2, En=SKY.e.length/2, par=new Array(Vn), i, k;
+  for(i=0;i<Vn;i++) par[i]=i;
+  function find(x){ while(par[x]!==x){ par[x]=par[par[x]]; x=par[x]; } return x; }
+  for(k=0;k<En;k++){ var a=find(SKY.e[k*2]), b=find(SKY.e[k*2+1]); if(a!==b) par[a]=b; }
+  var comp={}, edgesOf={};
+  for(i=0;i<Vn;i++){ var r=find(i); (comp[r]=comp[r]||[]).push(i); }
+  for(k=0;k<En;k++){ var rr=find(SKY.e[k*2]); (edgesOf[rr]=edgesOf[rr]||[]).push([SKY.e[k*2],SKY.e[k*2+1]]); }
+  var cen=SKY.c.map(function(c){ return { name:c[0], lon:c[1], dec:c[2] }; });
+  var MIN_E=5, MAX_E=24, cand=[];
+  Object.keys(comp).forEach(function(key){
+    var vs=comp[key], es=edgesOf[key]||[]; if(es.length<MIN_E||es.length>MAX_E) return;
+    var idx={}; vs.forEach(function(v,ii){ idx[v]=ii; });
+    var lon0=SKY.v[vs[0]*2];
+    var pts=vs.map(function(v){ var lon=SKY.v[v*2];
+      while(lon-lon0>180) lon-=360; while(lon-lon0<-180) lon+=360;   // unwrap around the RA seam
+      return { lon:lon, dec:SKY.v[v*2+1] }; });
+    var clon=0, cdec=0; pts.forEach(function(p){ clon+=p.lon; cdec+=p.dec; }); clon/=pts.length; cdec/=pts.length;
+    var cr=Math.cos(cdec*Math.PI/180);                               // RA compresses toward the poles
+    var xy=pts.map(function(p){ return { x:-(p.lon-clon)*cr, y:(p.dec-cdec) }; }); // -x: RA increases left, as on a chart
+    var rmax=0; xy.forEach(function(p){ var d=Math.sqrt(p.x*p.x+p.y*p.y); if(d>rmax) rmax=d; }); if(rmax<1e-6) rmax=1;
+    xy=xy.map(function(p){ return { x:p.x/rmax, y:p.y/rmax }; });     // unit figure, farthest star at radius 1
+    var clonN=((clon%360)+540)%360-180, bi=0, bd=1e9;
+    for(var j=0;j<cen.length;j++){ var dx=clonN-cen[j].lon, dy=cdec-cen[j].dec, dd=dx*dx+dy*dy; if(dd<bd){ bd=dd; bi=j; } }
+    cand.push({ name:cen[bi].name, dist:Math.sqrt(bd), verts:xy,
+                edges:es.map(function(e){ return [idx[e[0]], idx[e[1]]]; }) });
+  });
+  var best={}; cand.forEach(function(c){ if(!best[c.name]||c.dist<best[c.name].dist) best[c.name]=c; }); // one figure per name
+  return Object.keys(best).map(function(n){ return best[n]; }).sort(function(a,b){ return a.name.localeCompare(b.name); });
+})();
+function constellationFor(name){ return CONSTS.length ? CONSTS[hash("con::"+String(name).toLowerCase())%CONSTS.length] : null; }
+/* even spacing of N stars along a figure's lines (by arc length) — a lone work sits at
+   the figure's midpoint, a prolific one traces the whole shape. */
+function resampleConstellation(con,N){
+  var segs=con.edges.map(function(e){ var a=con.verts[e[0]], b=con.verts[e[1]];
+    return { a:a, b:b, len:Math.sqrt((b.x-a.x)*(b.x-a.x)+(b.y-a.y)*(b.y-a.y)) }; });
+  var L=segs.reduce(function(s,g){ return s+g.len; },0)||1, out=[];
+  for(var n=0;n<N;n++){ var t=((n+0.5)/N)*L, acc=0, seg=segs[0], si;
+    for(si=0;si<segs.length;si++){ if(acc+segs[si].len>=t){ seg=segs[si]; break; } acc+=segs[si].len; }
+    var f=seg.len>1e-6?(t-acc)/seg.len:0;
+    out.push({ x:seg.a.x+(seg.b.x-seg.a.x)*f, y:seg.a.y+(seg.b.y-seg.a.y)*f }); }
+  return out;
+}
+
+var skyGroup=new THREE.Group(); skyGroup.visible=false; scene.add(skyGroup);
+var SKY_R=1250, SKY_C=new THREE.Vector3(0,-420,-80);  // the night sky pulled in close,
+var skyLabels=[], skyLabelEl=document.getElementById("skylabels"); // woven through the cloud, not hung above it
+var skyToggleEl=document.getElementById("skytoggle");
+function skyDirOf(raIn,dec,lst,phi){
+  var ra=raIn<0?raIn+360:raIn;
+  var H=(lst-ra)*Math.PI/180, de=dec*Math.PI/180;
+  var alt=Math.asin(Math.sin(de)*Math.sin(phi)+Math.cos(de)*Math.cos(phi)*Math.cos(H));
+  var azS=Math.atan2(Math.sin(H), Math.cos(H)*Math.sin(phi)-Math.tan(de)*Math.cos(phi));
+  var A=azS+Math.PI;                                // from north, eastward
+  var x=Math.sin(A)*Math.cos(alt), y=Math.sin(alt), z=-Math.cos(A)*Math.cos(alt);
+  /* the dome is tilted to face the arrival: zenith → straight ahead, horizon wraps around you */
+  return { alt:alt, dir:new THREE.Vector3(x, z, -y) };
+}
+function buildSky(lat,lon){
+  while(skyGroup.children.length) skyGroup.remove(skyGroup.children[0]);
+  skyLabelEl.innerHTML=""; skyLabels=[];
+  var now=new Date();
+  var days=now.getTime()/86400000+2440587.5-2451545.0;
+  var lst=((280.46061837+360.98564736629*days)%360+lon+720)%360;
+  var phi=lat*Math.PI/180;
+  var dirs=[], i;
+  for(i=0;i<SKY.v.length;i+=2) dirs.push(skyDirOf(SKY.v[i],SKY.v[i+1],lst,phi));
+  /* constellations by centre altitude; whole figures fill first, so shapes are recognisable */
+  var cons=SKY.c.map(function(c){ var o=skyDirOf(c[1],c[2],lst,phi); return {name:c[0],alt:o.alt,dir:o.dir,verts:[]}; });
+  dirs.forEach(function(o,vi){ if(o.alt<0.06) return;
+    var best=0,bd=-2; cons.forEach(function(c,ci){ var d2=c.dir.dot(o.dir); if(d2>bd){bd=d2;best=ci;} });
+    cons[best].verts.push(vi); });
+  var order=cons.filter(function(c){ return c.verts.length&&c.alt>0.15; })
+    .sort(function(a,b){ return b.alt-a.alt; });
+  var slots=[]; order.forEach(function(c){ c.verts.forEach(function(v){ slots.push(v); }); });
+  if(!slots.length){ dirs.forEach(function(o,vi){ if(o.alt>0.02) slots.push(vi); }); }
+  /* the works take their places among the real stars */
+  var skyAttr=starGeo.getAttribute("aSkyPos");
+  STARS.forEach(function(s,si){
+    var vi=slots[si%slots.length];
+    /* a thick shell, not a sphere's surface — the field thins out instead of hitting a wall */
+    var p=dirs[vi].dir.clone().multiplyScalar(SKY_R+((hash(s.work.drop+"r")%500)-250)).add(SKY_C);
+    if(si>=slots.length){ p.x+=((hash(s.work.drop)%40)-20); p.y+=((hash(s.work.drop+"y")%40)-20); }
+    s.skyPos=p;
+    skyAttr.array[si*3]=p.x; skyAttr.array[si*3+1]=p.y; skyAttr.array[si*3+2]=p.z;
+  });
+  skyAttr.needsUpdate=true;
+  /* the rest of the real sky: faint silver context stars + the constellation lines */
+  var cs=[], vi2;
+  for(vi2=0;vi2<dirs.length;vi2++){ var aa=dirs[vi2].alt;
+    if(aa>0.02 && (aa>0.25||Math.random()<(aa/0.25)*0.7)){   // the rim fades, never walls
+    var pv=dirs[vi2].dir.clone().multiplyScalar(SKY_R).add(SKY_C); cs.push(pv.x,pv.y,pv.z); } }
+  var cg=new THREE.BufferGeometry();
+  cg.setAttribute("position",new THREE.Float32BufferAttribute(cs,3));
+  var cm=new THREE.PointsMaterial({ size:5, sizeAttenuation:false, transparent:true, opacity:0.34,
+    color:new THREE.Color(PAL("--a-peri")), blending:THREE.AdditiveBlending, depthWrite:false });
+  var cp=new THREE.Points(cg,cm); cp.frustumCulled=false; skyGroup.add(cp);
+  var ls=[];
+  for(i=0;i<SKY.e.length;i+=2){ var a=SKY.e[i],b=SKY.e[i+1];
+    if(dirs[a].alt>0.02&&dirs[b].alt>0.02){
+      var pa=dirs[a].dir.clone().multiplyScalar(SKY_R).add(SKY_C),
+          pb=dirs[b].dir.clone().multiplyScalar(SKY_R).add(SKY_C);
+      ls.push(pa.x,pa.y,pa.z, pb.x,pb.y,pb.z); } }
+  var lg=new THREE.BufferGeometry();
+  lg.setAttribute("position",new THREE.Float32BufferAttribute(ls,3));
+  var lm=new THREE.LineBasicMaterial({ transparent:true, opacity:0.11, color:new THREE.Color(PAL("--a-peri")),
+    blending:THREE.AdditiveBlending, depthWrite:false });
+  var ll=new THREE.LineSegments(lg,lm); ll.frustumCulled=false; skyGroup.add(ll);
+  /* quiet names for the figures overhead */
+  order.slice(0,10).forEach(function(c){
+    var el2=document.createElement("div"); el2.className="skylabel"; el2.textContent=c.name;
+    skyLabelEl.appendChild(el2);
+    skyLabels.push({ el:el2, pos:c.dir.clone().multiplyScalar(SKY_R*1.06).add(SKY_C) });
+  });
+}
+function withLocation(cb){
+  var done=false;
+  function fb(){ if(done)return; done=true; cb(20, -(new Date().getTimezoneOffset()/60)*15); }
+  if(!navigator.geolocation){ fb(); return; }
+  try{
+    navigator.geolocation.getCurrentPosition(
+      function(p2){ if(done)return; done=true; cb(p2.coords.latitude,p2.coords.longitude); },
+      fb,{timeout:3500,maximumAge:600000});
+  }catch(e){ fb(); return; }
+  setTimeout(fb,4200);
+}
+function skyMode(on){
+  if(on&&!SKY) return;
+  if(on){
+    withLocation(function(lat,lon){
+      buildSky(lat,lon);
+      skyOn=true; skyGroup.visible=true;
+      skyToggleEl.innerHTML="⬡&nbsp; the portrait";
+      computeFocus();
+    });
+  } else {
+    skyOn=false;
+    skyToggleEl.innerHTML="⋆&nbsp; tonight's sky";
+    skyLabels.forEach(function(l){ l.el.style.opacity=0; });
+    computeFocus();
+  }
+}
+if(SKY) skyToggleEl.addEventListener("click",function(){ skyMode(!skyOn); });
+else skyToggleEl.style.display="none";
+/* tonight's sky is the lander: build it quietly from the timezone (no permission
+   dialog before a single thing has been seen); precise geolocation only when asked */
+if(SKY){
+  buildSky(20, -(new Date().getTimezoneOffset()/60)*15);
+  skyOn=true; skyGroup.visible=true;
+  skyToggleEl.innerHTML="⬡&nbsp; the portrait";
+}
+function skyLabelStep(mix){
+  for(var i=0;i<skyLabels.length;i++){
+    var l=skyLabels[i], sp=screenPos(l.pos);
+    if(!sp||sp.z>1||mix<0.4){ l.el.style.opacity=0; continue; }
+    l.el.style.opacity=(mix-0.4)/0.6;
+    l.el.style.left=sp.x+"px"; l.el.style.top=sp.y+"px";
+  }
+}
+
+/* time of day quietly tints the light — dusk warms, deep night cools */
+var DAY_TINT=(function(){
+  var h=new Date().getHours()+new Date().getMinutes()/60;
+  if(h>=20||h<5)  return [0.90,0.93,1.04];   // deep night
+  if(h>=17)       return [1.05,0.98,0.90];   // dusk
+  if(h>=5&&h<8)   return [1.04,0.95,0.97];   // dawn
+  return [1,1,1];
+})();
+
+/* ════════ ARRIVAL + MAIN LOOP ════════ */
+var t=0, arrivalT=0, ARRIVE_DUR=5.2, arrived=false;
+var camFrom=camera.position.clone();
+var lastFrame=performance.now();
+var slowSec=0, goodSec=0, fpsChecked=false;   // perf watchdog: only SUSTAINED steady-state slowness falls back
+
+document.getElementById("loading").classList.add("gone");
+requestAnimationFrame(function(){ document.getElementById("fade").classList.add("gone"); });
+
+var _rayD=new THREE.Vector3(), _ndc=new THREE.Vector3();
+function frame(){
+  var now=performance.now(), dt=Math.min(0.05,(now-lastFrame)/1000); lastFrame=now;
+  var timeScale=bloomOpen()?0.28:1;                 // the world holds its breath behind the veil
+  t+=dt*timeScale;
+
+  /* arrival: ease from the dark to the vantage where the portrait resolves */
+  if(arrivalT<1){
+    arrivalT=Math.min(1,arrivalT+dt/ARRIVE_DUR);
+    var au=smoother(arrivalT);
+    camera.position.lerpVectors(camFrom,VANTAGE,au);
+    yaw=0.03*(1-au); pitch=-0.07*(1-au);
+    camera.quaternion.setFromEuler(new THREE.Euler(pitch,yaw,0,"YXZ"));
+    if(arrivalT>=1&&!arrived){ arrived=true; document.body.classList.add("arrived"); }
+  } else {
+    glideStep(dt);
+    flightStep(dt);
+  }
+
+  /* cursor ray → light pools softly where you look (nothing is ever moved by it) */
+  _ndc.set((mouseX/innerWidth)*2-1,-(mouseY/innerHeight)*2+1,0.5);
+  _ndc.unproject(camera);
+  _rayD.copy(_ndc).sub(camera.position).normalize();
+  starMat.uniforms.uRayO.value.copy(camera.position);
+  starMat.uniforms.uRayD.value.copy(_rayD);
+  starMat.uniforms.uRayGlow.value+= (((!bloomOpen()&&!dragging)?0.24:0)-starMat.uniforms.uRayGlow.value)*0.06;
+
+  /* the portal breathes and waits */
+  portalMat.uniforms.uT.value=t;
+  if(arrivalT>=1) portalStep();
+
+  /* tonight's sky eases in and out */
+  var mixv=starMat.uniforms.uSkyMix.value;
+  mixv+=((skyOn?1:0)-mixv)*0.022;
+  starMat.uniforms.uSkyMix.value=mixv;
+  /* an easter-egg formation eases in and out the same way; a re-form scatters to the field then re-gathers */
+  var emix=starMat.uniforms.uEggMix.value;
+  var emixTarget=(eggOn&&!eggScatter)?1:0;
+  emix+=(emixTarget-emix)*(eggScatter?0.05:0.03);      // scatter a touch quicker than it gathers
+  if(eggScatter&&emix<0.06){ applyEggTargets(eggPending); eggPending=null; eggScatter=false; } // bottom of the dip → swap in the new shape, let it rise
+  starMat.uniforms.uEggMix.value=emix;
+  if(!skyOn&&mixv<0.02&&skyGroup.visible) skyGroup.visible=false;
+  skyGroup.children.forEach(function(ch){ if(ch.material) ch.material.opacity=(ch.type==="LineSegments"?0.11:0.34)*mixv; });
+  skyLabelStep(mixv);
+
+  /* uniforms */
+  var ignite=Math.min(1,arrivalT*1.6);
+  starMat.uniforms.uT.value=t; starMat.uniforms.uIgnite.value=ignite; starMat.uniforms.uPixH.value=innerHeight;
+  if(cloud){ cloud.material.uniforms.uT.value=t; cloud.material.uniforms.uIgnite.value=ignite;
+    cloud.material.uniforms.uPixH.value=innerHeight;
+    cloud.material.uniforms.uTint.value.set(DAY_TINT[0],DAY_TINT[1],DAY_TINT[2]);
+    var dimT=focusStar?0.5:(skyOn?0.8:1);   // the photograph stays present beneath its night sky
+    cloud.material.uniforms.uDim.value+=(dimT-cloud.material.uniforms.uDim.value)*0.04; }
+  if(ribbonMesh){ ribbonMat.uniforms.uT.value=t;
+    var rOn=(gatherOn && starMat.uniforms.uEggMix.value<0.80)?0:1;   // let the figure land first
+    ribbonMat.uniforms.uOn.value+=(rOn-ribbonMat.uniforms.uOn.value)*0.05; }
+
+  /* lit smoothing (focus dimming) — tiny CPU cost even at 10k */
+  var litAttr=starGeo.getAttribute("aLit"), changed=false;
+  STARS.forEach(function(s,i){ var tgt=(s.litTarget===undefined)?1:s.litTarget;
+    var v=litAttr.array[i]; var nv=v+(tgt-v)*0.07;
+    if(Math.abs(nv-v)>1e-4){ litAttr.array[i]=nv; changed=true; } });
+  if(changed) litAttr.needsUpdate=true;
+  var hlit=hubGeo.getAttribute("aLit"), hch=false;
+  HUBS.forEach(function(h,i){ var tgt=(h.litTarget===undefined)?1:h.litTarget;
+    var v=hlit.array[i]; var nv=v+(tgt-v)*0.07;
+    if(Math.abs(nv-v)>1e-4){ hlit.array[i]=nv; hch=true; } });
+  if(hch) hlit.needsUpdate=true;
+
+  hoverStep();
+  snipStep();
+  AUDIO.step();
+  renderer.render(scene,camera);
+
+  /* graceful performance fallback: hand a machine that genuinely can't hold the field the 2D
+     sky — but NEVER bounce a capable one for the transient cost of arrival, a search's gather,
+     a glide, or a single hitch. The old check averaged the first 300 frames blindly, so a
+     search right after arrival (the first thing the lede invites) dragged the average under
+     the line and exiled a smooth machine mid-keystroke. Now: ignore transient frames, count
+     only SUSTAINED steady-state slowness, and once the machine has proven itself, stop watching
+     so it can never be swapped out later. */
+  if(arrived && !fpsChecked){
+    var busy = arrivalT<0.995 || glide.active || Math.abs(emixTarget-emix)>0.02;  // ignition · gather-morph · glide
+    if(busy){ /* transient by design — costs frames, means nothing about the machine */ }
+    else if(1/dt < 26){ slowSec+=dt; goodSec=0; if(slowSec>=3.5){ fpsChecked=true; goFallback(); return; } }
+    else { goodSec+=dt; slowSec=0; if(goodSec>=4){ fpsChecked=true; } }   // proven capable → stop watching for good
+  }
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+})();
+</script>
+</body>
+</html>

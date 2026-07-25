@@ -5,8 +5,9 @@ The site is fully static — no server, no build step, no environment variables.
 
 ```
 site/
-  index.html              THE CONSTELLATION — the front door
-  wall.html               the native grid (mobile / no-WebGL2 / slow machines)
+  index.html              the lander — the front door, "Enter the Gallery"
+  wall.html               the gallery — a scrolling grid (also mobile / no-WebGL2 / slow machines)
+  immersive.html          the 3D constellation, linked from the lander
   constellation.html      redirect stub, only for links shared before the rename
   vendor/three.r128.min.js
   data/                   portrait · cloud347 · sky · serials · eggs
@@ -130,9 +131,10 @@ Re-run `node bake-eggs.js` only when `drawings/` changed.
 
 ## Before you announce it
 
-- Open the real URL on a **phone** — you should land on `wall.html`, not a broken
-  3D scene.
-- Open it on a laptop and check the arrival resolves into Card 347.
+- Open the real URL on a **phone** — you should land on the lander, and
+  "Enter the Gallery" should take you to `wall.html`, not a broken 3D scene.
+- Open it on a laptop, click through to **The Immersive Experience**, and
+  check the arrival resolves into Card 347.
 - Click any work → "read on 6529 ↗" should open that specific drop, not the homepage.
   (Members not in the OUTSIDERS wave will hit 6529's login gate — that is expected
   and the link text stays honest about where it goes.)

@@ -1,17 +1,23 @@
-# OUTSIDERS — The Constellation
+# OUTSIDERS — The Constellation Gallery
 
-A field of stars you fly through. Each one is a photograph someone made and
-someone else stopped to look at. Card 347 hangs around you as a cloud of
-coloured points; search a name and that person's constellation draws itself in
-front of you.
+A living wall of the work this community has witnessed. Land on `index.html`
+for a short explanation of what the place is, then **Enter the Gallery**
+(`wall.html`) — a scrolling grid of every witnessed work, searchable by name,
+with "follow this author / this witness" reshaping the grid around whoever
+you follow. For those who want it, **The Immersive Experience**
+(`immersive.html`) is the original 3D constellation: Card 347 hangs around
+you as a cloud of coloured points, and searching a name draws that person's
+constellation in front of you.
 
-Static, single page, no server, no build step. It runs from `file://`.
+Static, no server, no build step. It runs from `file://`.
 
     site/
-      index.html      the constellation — the front door
-      wall.html       the native grid (phones, no-WebGL2, slow machines)
-      data/           portrait · cloud347 · sky · serials · eggs
-      vendor/         three.js r128, vendored so a CDN outage costs us nobody
+      index.html           the lander — what this is, then "Enter the Gallery"
+      wall.html            the gallery — a scrolling grid, search, your own kept works
+      immersive.html       the 3D constellation, linked from the lander
+      constellation.html   redirect stub (old URL, keeps working)
+      data/                portrait · cloud347 · sky · serials · eggs
+      vendor/               three.js r128, vendored so a CDN outage costs nobody
 
     producer/
       producer.js     crawls the wave, decides what belongs, bakes site/data
@@ -25,7 +31,8 @@ Static, single page, no server, no build step. It runs from `file://`.
 
     node serve.js
 
-Then <http://localhost:8347>. Or just open `site/index.html`.
+Then <http://localhost:8347>. Or just open `site/index.html` — it runs
+straight from `file://` too.
 
 ## How a work gets on the wall
 

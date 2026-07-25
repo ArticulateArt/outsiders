@@ -30,7 +30,7 @@
      - No resolvable image (e.g. X/Farcaster-link-only submissions) → excluded.
      - No qualified :outsiders: witness → excluded (not removed; just uncounted).
 
-   OUTPUT (schema is FROZEN — both index.html & wall.html read it)
+   OUTPUT (schema is FROZEN — both immersive.html & wall.html read it)
      work = { drop, makers[], witnesses[], img, full, nx, ny, review }
      ../site/data/portrait.json   and   ../site/data/portrait.js  (window.PORTRAIT=…)
 

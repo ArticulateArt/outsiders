@@ -1,11 +1,18 @@
-# OUTSIDERS — The Constellation
+# OUTSIDERS — The Constellation Gallery
 
-A field of stars you fly through. Each star is a photograph someone made and
-someone else stopped to look at. Card 347 (a hand holding a phone) hangs
-around you as a cloud of coloured points; search a name and that person's
-constellation draws itself in front of you. On phones, or machines without
-WebGL2, it falls back to `wall.html`, a native scrolling grid of the same
-works — touch is a browse-and-read experience, not a shrunk-down 3D scene.
+`index.html` is the front door: a short lander explaining what this is (a
+living wall of work this community has witnessed, and what a "witness" is),
+with a single "Enter the Gallery" action. That takes you to `wall.html` — a
+scrolling masonry grid of every witnessed work: search a name, tap a work to
+read it, "follow this author/witness" reshapes the grid around them, and a
+bookmark (⬡) on any tile builds a private kept-gallery.
+
+For anyone who wants it, the lander also links to **The Immersive
+Experience** — `immersive.html`, the original 3D constellation: Card 347 (a
+hand holding a phone) hangs around you as a cloud of coloured points, and
+searching a name draws that person's constellation in front of you. Touch
+devices and machines without WebGL2 never see it — `immersive.html`'s own
+boot gate sends them straight to `wall.html` instead.
 
 Static site, no server, no build step, no environment variables. Everything
 that ships lives in `site/`. See `README.md` for how it's put together, and
@@ -56,29 +63,40 @@ Fix wasn't a patch: built `site/wall.html`, a native scrolling masonry grid
 over the same `portrait.js` data — shuffled landing, live search, tap a work
 for image+caption+witness credit, "follow this author/witness" re-scopes the
 grid with a dismissible pill, a bookmark (⬡) on every tile builds a private
-kept-gallery (`localStorage.outsiders_kept`, same schema as `index.html`).
-`threads.html` (the old 2D fallback) is retired; `index.html`'s boot gate
-now sends touch + non-WebGL2 devices to `wall.html` instead
-(`site/index.html:296-309`, `goFallback()`).
+kept-gallery (`localStorage.outsiders_kept`, same schema across every page).
+`threads.html` (the old 2D fallback) is retired; the 3D scene's boot gate
+sends touch + non-WebGL2 devices to `wall.html` instead
+(`site/immersive.html:296-309`, `goFallback()`).
 
 Tested live on the founder's iPhone: **"works BEAUTIFULLY... this is the
 solution."** Verdict after seeing it: the masonry gallery does the job better
 than the 3D scene even conceptually — it's not just the mobile fallback
-anymore, it's the site's new front door. Follow-up direction, not yet built:
+anymore, it's the site's new front door. Built a lander (`site/land.html`)
+explaining the concept ahead of "Enter"ing the gallery, initially as a
+standalone page while the founder reviewed it live.
 
-- **`site/land.html`** (this pass) — a clean lander explaining the concept
-  before "Enter"ing `wall.html`. Not yet wired as the actual site root — the
-  boot gate in `index.html` still opens straight into the 3D scene for
-  non-touch/WebGL2 visitors. Making `land.html` the true `/` (with the 3D
-  scene demoted to a secondary "immersive experience" link, as land.html
-  already offers) is a deliberate follow-up, not done here.
+**Update, same day:** approved, then renamed everything so the lander is the
+actual site root: `land.html` → `index.html`; the old 3D `index.html` →
+`immersive.html`. Deliberately a plain file rename, not a `vercel.json`
+rewrite rule — the founder didn't want routing config interacting with the
+6-hourly auto-rebuild. Every internal link/comment across `index.html`,
+`immersive.html`, `wall.html`, `constellation.html` (the old redirect stub —
+still points at `./`, which now correctly lands on the new lander), and the
+docs was updated to match; `vercel.json` needed no changes since its rules
+are path-pattern based, not filename-specific.
+
+Still open:
+
 - **Dynamic column count in `wall.html`** — currently a fixed 2/3/4-column
   media-query ladder (`site/wall.html`, `#grid,#ggrid{columns:...}`); should
   scale with actual window width for laptop-size screens instead of jumping
   at fixed breakpoints. Explicitly deferred — "don't touch wall.html, that
   is done" (2026-07-26).
 - Whole-site copy/identity pass: working title **"OUTSIDERS Constellation
-  Gallery"** / **"The Constellation"**. `land.html` establishes the tone
-  (what a witness is, why being witnessed is the community's central act);
-  extending that voice into `wall.html` and `index.html` themselves (button
-  labels, hints, etc.) hasn't been done.
+  Gallery"** / **"The Constellation."** `index.html` (the lander) establishes
+  the tone (what a witness is, why being witnessed is the community's
+  central act); extending that voice into `wall.html` and `immersive.html`
+  themselves (button labels, hints, etc.) hasn't been done.
+- `immersive.html` has no link back to the lander/gallery — it's reached
+  only forward, from `index.html`'s "Immersive Experience" button. Worth a
+  quiet way back in, not added here to stay in scope.
