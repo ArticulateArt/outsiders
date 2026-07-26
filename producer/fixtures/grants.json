@@ -12,6 +12,16 @@
    "ofRecord": "Articulate",
    "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
    "actor": "Articulate",
+   "targetId": "231b110b-57f5-442b-8030-9334a6ed56b6",
+   "target": "dsanchesGM",
+   "rating": 16000,
+   "at": "2026-07-26T13:10:39.000Z"
+  },
+  {
+   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "ofRecord": "Articulate",
+   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "actor": "Articulate",
    "targetId": "b0c4be70-59b2-4f39-a6fe-f03f90256f21",
    "target": "dougfriesen",
    "rating": 16000,
@@ -76,16 +86,6 @@
    "target": "Asaart",
    "rating": 12000,
    "at": "2026-06-22T11:22:18.000Z"
-  },
-  {
-   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "ofRecord": "Articulate",
-   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "actor": "Articulate",
-   "targetId": "231b110b-57f5-442b-8030-9334a6ed56b6",
-   "target": "dsanchesGM",
-   "rating": 15000,
-   "at": "2026-06-12T06:41:00.000Z"
   },
   {
    "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
