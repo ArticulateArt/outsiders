@@ -853,22 +853,32 @@ var SPEED=460;
 var skyEl=document.getElementById("sky");
 function searchFocused(){ return document.activeElement===searchInput; }
 function movementKeyDown(){ return keys.KeyW||keys.KeyA||keys.KeyS||keys.KeyD||keys.Space||keys.ShiftLeft||keys.ShiftRight||twoFinger; }
+/* Shift (sink) is a modifier, and a modifier's keyup is fragile: the OS can
+   swallow it on a window defocus, on key ghosting when Shift rides along with
+   WASD, or when Sticky Keys latches it. A swallowed Shift keyup pins you to the
+   floor — and Space (rise) then does nothing, because the phantom sink cancels
+   it exactly. Every input event reports the TRUE modifier state, so reconcile
+   from it: the moment you press any key or move the mouse, a stuck Shift clears. */
+function syncShift(e){
+  if(e.getModifierState && !e.getModifierState("Shift")){ keys.ShiftLeft=false; keys.ShiftRight=false; }
+}
 addEventListener("keydown",function(e){
   if(e.key==="Escape"){ onEscape(); return; }
+  syncShift(e);
   if(searchFocused()) return;
   if(e.code==="Space"||e.key===" "||e.key==="Spacebar"){ e.preventDefault(); keys.Space=true; } // space rises, always
   keys[e.code]=true;
   if(keys.KeyW||keys.KeyA||keys.KeyS||keys.KeyD||keys.Space) document.body.classList.add("explored");
   if(e.code==="Home" && !bloomOpen()) glideHome();
 });
-addEventListener("keyup",function(e){ keys[e.code]=false;
+addEventListener("keyup",function(e){ keys[e.code]=false; syncShift(e);
   if(e.key===" "||e.key==="Spacebar") keys.Space=false; });
 addEventListener("blur",function(){ keys={}; });
 
 /* look around by dragging the sky — like turning your head, never a trap */
 var dragging=false, dragPX=0, dragPY=0;
 addEventListener("pointermove",function(e){
-  mouseX=e.clientX; mouseY=e.clientY;
+  mouseX=e.clientX; mouseY=e.clientY; syncShift(e); // a stuck Shift heals the instant you look around
   if(dragging && !bloomOpen()){
     var dx=e.clientX-dragPX, dy=e.clientY-dragPY; dragPX=e.clientX; dragPY=e.clientY;
     if(glide.active) return;                       // a drag during a glide only cancels on release
