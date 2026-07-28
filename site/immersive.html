@@ -87,32 +87,47 @@
   #ac .it .who{font-style:normal;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-left:9px}
   #ac .it:hover,#ac .it.sel{background:rgba(195,189,142,.12);color:#fff}
 
-  /* right-margin menu — relational, context-sensitive */
+  /* right-margin menu — a person's threads, in the bloom's grammar: one tracked-
+     caps label, italic reserved for the name, everything else upright, dots that
+     are rings until their thread is active. */
   #threads{position:fixed;z-index:6;right:clamp(18px,3.4vw,44px);top:50%;transform:translateY(-50%);
-    display:flex;flex-direction:column;gap:14px;text-align:right;max-width:24ch;pointer-events:none}
-  #threads .lbl{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:rgba(140,124,48,.75);
-    margin-bottom:2px;text-shadow:0 1px 12px #000}
-  #threads .who{font-style:italic;font-size:clamp(15px,1.5vw,18px);color:#fff;text-shadow:0 1px 12px #000;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  #threads .conname{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;
-    color:rgba(140,124,48,.85);margin-top:3px;text-shadow:0 1px 10px #000}
+    display:flex;flex-direction:column;gap:10px;text-align:right;max-width:24ch;pointer-events:none;align-items:flex-end}
+  #threads .lbl{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--a-khaki);opacity:.82;
+    margin-bottom:1px;text-shadow:0 1px 12px #000}
+  #threads .who{font-style:italic;font-size:clamp(16px,1.6vw,20px);color:#fff;text-shadow:0 1px 12px #000;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  #threads .conname{font-size:12px;color:rgba(194,203,234,.5);margin-top:1px;text-shadow:0 1px 10px #000}
   #threads .rest{font-style:italic;font-size:13.5px;color:rgba(194,203,234,.5);text-shadow:0 1px 12px #000;line-height:1.55}
-  #threads .kt{font-style:italic;font-size:clamp(14px,1.4vw,16.5px);color:rgba(194,203,234,.44);
+  /* the star you clicked, as its own work — first click already shows it, so
+     there is no dead "nothing happened" beat; click it to open the bloom */
+  #threads .mework{cursor:pointer;pointer-events:auto;margin:6px 0 1px;border-radius:6px;overflow:hidden;
+    width:clamp(66px,7vw,92px);aspect-ratio:1}
+  #threads .mework img{width:100%;height:100%;display:block;object-fit:cover;background:#11161b;
+    border:1px solid rgba(205,211,221,.16);border-radius:6px;transition:border-color .3s,box-shadow .3s}
+  #threads .mework:hover img{border-color:rgba(212,190,120,.6);box-shadow:0 0 16px rgba(212,190,120,.22)}
+  #threads .seeall2{font-size:12.5px;color:rgba(194,203,234,.5);margin-bottom:3px}
+  #threads .seeall2 a{color:var(--a-khaki);text-decoration:none;pointer-events:auto;transition:color .3s}
+  #threads .seeall2 a:hover{color:#fff}
+  /* the three threads — upright, each dot a ring until its thread is the active
+     one, when only that colour lights (--tc). No more three saturated dots. */
+  #threads .kt{font-size:clamp(13px,1.3vw,15px);color:rgba(194,203,234,.5);
     cursor:pointer;pointer-events:auto;transition:color .35s ease;text-shadow:0 1px 12px #000;white-space:nowrap;user-select:none}
-  #threads .kt:hover{color:rgba(205,211,221,.9)}
-  #threads .kt.on{color:#fff}
-  #threads .kt .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-left:9px;
-    vertical-align:middle;background:currentColor;box-shadow:0 0 9px 1px currentColor;opacity:.5;transition:opacity .35s}
-  #threads .kt.on .dot{opacity:1}
+  #threads .kt:hover,#threads .kt.on{color:#fff}
+  #threads .kt .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-left:9px;vertical-align:middle;
+    border:1px solid rgba(194,203,234,.4);background:transparent;transition:background .3s,border-color .3s,box-shadow .3s}
+  #threads .kt:hover .dot,#threads .kt.on .dot{background:var(--tc);border-color:var(--tc);box-shadow:0 0 8px 1px var(--tc)}
+  /* kin: the OTHER people this thread reaches, deduped by person — never a
+     repeated name; a prolific same-hand author simply shows none. */
+  #threads .khead{font-size:11px;letter-spacing:.1em;color:rgba(194,203,234,.5);margin:6px 0 0;text-shadow:0 1px 10px #000}
   #threads .kin{margin-top:4px;display:flex;flex-direction:column;gap:7px;align-items:flex-end}
   #threads .kin .kn{display:flex;align-items:center;gap:9px;cursor:pointer;pointer-events:auto;max-width:100%}
-  #threads .kin .kn img{width:36px;height:36px;object-fit:cover;border-radius:5px;flex:0 0 auto;
+  #threads .kin .kn img{width:34px;height:34px;object-fit:cover;border-radius:5px;flex:0 0 auto;
     border:1px solid rgba(205,211,221,.14);transition:border-color .3s,box-shadow .3s}
   #threads .kin .kn:hover img{border-color:rgba(212,190,120,.6);box-shadow:0 0 14px rgba(212,190,120,.2)}
-  #threads .kin .kn .nm{font-style:italic;font-size:13px;color:rgba(205,211,221,.6);transition:color .3s;
+  #threads .kin .kn .nm{font-size:12.5px;color:rgba(205,211,221,.6);transition:color .3s;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;order:-1}
   #threads .kin .kn:hover .nm{color:#fff}
-  #threads .kin .more{font-style:italic;font-size:13px;color:rgba(194,203,234,.35)}
+  #threads .kin .more{font-size:12.5px;color:rgba(194,203,234,.35)}
 
   /* snippets — works surfacing inside their fireflies' glow as you draw near */
   #snips{position:fixed;inset:0;z-index:3;pointer-events:none}
@@ -844,21 +859,39 @@ function updateMenu(){
     h+='<div class="lbl">their threads</div>';
     h+='<div class="who">'+esc(makerLabel(w))+'</div>';
     if(gatherOn&&gatherConName) h+='<div class="conname">in '+esc(gatherConName)+'</div>';
-    KINDS.forEach(function(k,idx){
+    // THE STAR YOU CLICKED, as its own work — the first click's reward, and the
+    // image always corresponds to the star. Click it to open the bloom.
+    h+='<div class="mework" data-open="1"><img loading="lazy" referrerpolicy="no-referrer" src="'+w.img+'" alt=""></div>';
+    // its whole body of work lives on the wall (hidden for outsiders, no 6529 name)
+    (w.makers||[]).forEach(function(m){
+      h+='<div class="seeall2"><a href="wall.html#by='+encodeURIComponent(m)+'">see all by '+esc(m)+' →</a></div>'; });
+    KINDS.forEach(function(k){
       var on=selKind&&selKind.key===k.key;
-      h+='<div class="kt'+(on?" on":"")+'" data-k="'+k.key+'">'+esc(k.menuLabel)+
-         '<span class="dot" style="color:'+k.color+'"></span></div>';
+      h+='<div class="kt'+(on?" on":"")+'" data-k="'+k.key+'" style="--tc:'+k.color+'">'+esc(k.menuLabel)+
+         '<span class="dot"></span></div>';
     });
+    // kin = the OTHER people this thread reaches, deduped by person and with the
+    // focused person removed. Down "the same hand" that is everyone → nobody, so
+    // the messy repeated-name list is gone; the wall link carries their others.
     if(selKind&&kinStars.length){
-      h+='<div class="kin"><div class="lbl" style="margin-top:6px">'+esc(selKind.label)+'</div>';
-      kinStars.slice(0,6).forEach(function(s){
-        h+='<div class="kn" data-i="'+s.i+'"><img loading="lazy" referrerpolicy="no-referrer" src="'+s.work.img+'" alt="">'+
-           '<span class="nm">'+esc(makerLabel(s.work))+'</span></div>'; });
-      if(kinStars.length>6) h+='<div class="more">…and others, along the thread</div>';
-      h+='</div>';
+      var fmk=(w.makers&&w.makers[0])||null, seen={}, people=[];
+      kinStars.forEach(function(s){
+        var m=(s.work.makers&&s.work.makers[0])||("~"+s.work.drop); // an outsider stands alone
+        if(m===fmk||seen[m]) return; seen[m]=1; people.push(s);
+      });
+      if(people.length){
+        h+='<div class="kin"><div class="khead">'+esc(selKind.label)+'</div>';
+        people.slice(0,6).forEach(function(s){
+          h+='<div class="kn" data-i="'+s.i+'"><img loading="lazy" referrerpolicy="no-referrer" src="'+s.work.img+'" alt="">'+
+             '<span class="nm">'+esc(makerLabel(s.work))+'</span></div>'; });
+        if(people.length>6) h+='<div class="more">…and more</div>';
+        h+='</div>';
+      }
     }
   }
   threadsEl.innerHTML=h;
+  var mw=threadsEl.querySelector("[data-open]");
+  if(mw) mw.addEventListener("click",function(){ if(focusStar) openWork(focusStar.work); });
   threadsEl.querySelectorAll(".kt").forEach(function(el){
     el.addEventListener("click",function(){ setKind(KINDS.find(function(k){return k.key===el.dataset.k;})); });
   });
