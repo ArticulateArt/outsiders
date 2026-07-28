@@ -113,7 +113,19 @@ const isOutsiders = (reaction) => norm(reaction) === CONFIG.witnessEmoji;
 
 // A drop's text = all its parts joined.
 function dropText(d) { return (d.parts || []).map((p) => p.content || "").join("\n").trim(); }
+// Inline markdown image embed: ![alt](url). Long-form drops (dougfriesen &c.)
+// carry the artwork here in the CONTENT, not in the structured media[] array —
+// missing it silently excludes the work. Returns the first such url, or null.
+const MD_IMG = /!\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/i;
+function markdownImg(d) {
+  for (const p of d.parts || []) {
+    const m = MD_IMG.exec(p.content || "");
+    if (m) return m[1];
+  }
+  return null;
+}
 // A drop's first usable IMAGE url (skip non-image media), ipfs-resolved.
+// Prefers structured media[]; falls back to an inline markdown ![](…) embed.
 function dropImg(d) {
   for (const p of d.parts || []) {
     for (const m of p.media || []) {
@@ -121,7 +133,7 @@ function dropImg(d) {
       if (!mime || mime.startsWith("image/")) return resolveMedia(m.url);
     }
   }
-  return null;
+  return resolveMedia(markdownImg(d));
 }
 
 // ── DATA SOURCES (live crawl OR offline fixtures; identical drop shape) ─────
