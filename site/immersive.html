@@ -170,12 +170,16 @@
     text-shadow:0 1px 18px rgba(6,8,11,.95)}
   .bhead,.bfoot{flex:0 0 auto}
   .bmeta .eyebrow2{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--a-khaki);margin:0 0 .5em;opacity:.85}
-  .bmeta .maker{font-size:clamp(28px,3.6vw,44px);line-height:1.03;color:#fff;font-style:italic;font-weight:400;margin:0 0 .45em}
+  /* italic is reserved for the voice: only the name and the caption lean. */
+  .bmeta .namerow{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px;margin:0 0 .5em}
+  .bmeta .maker{font-size:clamp(28px,3.6vw,44px);line-height:1.03;color:#fff;font-style:italic;font-weight:400;margin:0}
   /* the doorway to this hand's whole body of work — the constellation shows one
-     piece, the wall shows all of them (see wall.html#by=<name>) */
-  .bmeta .seeall{margin:0 0 3px;font-size:13.5px;font-style:italic;line-height:1.5}
-  .bmeta .seeall a{color:var(--a-khaki);text-decoration:none;border-bottom:1px solid rgba(212,190,120,.32);padding-bottom:1px;transition:color .3s ease}
+     piece, the wall shows all of them (see wall.html#by=<name>). Upright, quiet,
+     riding next to the name rather than underlined beneath it. */
+  .bmeta .seeall{font-size:13px;color:rgba(194,203,234,.5);align-self:center}
+  .bmeta .seeall a{color:var(--a-khaki);text-decoration:none;transition:color .3s ease}
   .bmeta .seeall a:hover{color:#fff}
+  .bmeta .seeall .sep{opacity:.4;margin:0 5px}
   /* The page area is the only thing that scrolls, and it is capped — so a three-word
      entry and a thousand-word one have the same silhouette. Before this, .bmeta had no
      height at all and long text ran off the bottom of a clipped overlay, unreachable. */
@@ -188,37 +192,39 @@
     mask-image:linear-gradient(to bottom,#000 calc(100% - 30px),transparent 100%)}
   .bmeta .words::-webkit-scrollbar,.brel::-webkit-scrollbar{width:7px}
   .bmeta .words::-webkit-scrollbar-thumb,.brel::-webkit-scrollbar-thumb{background:rgba(205,211,221,.16);border-radius:9px}
-  /* the three threads, in the field menu's own grammar — quiet italic + a coloured dot,
-     one line that cannot wrap (the old bordered pills wrapped to three ragged rows) */
-  .bmeta .threads2{margin:18px 0 0;display:flex;align-items:baseline;gap:clamp(11px,1.5vw,19px);
+  /* the three threads: upright, no lead word. Each dot is a neutral ring until
+     its thread is the one you're following — only the active colour lights, so
+     three saturated dots no longer fire at once. Colour rides on --tc. */
+  .bmeta .threads2{margin:20px 0 0;display:flex;align-items:baseline;gap:clamp(12px,1.6vw,20px);
     flex-wrap:nowrap;white-space:nowrap}
-  .bmeta .threads2 .lead{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:rgba(194,203,234,.42)}
-  .bmeta .kt2{cursor:pointer;font-style:italic;font-size:14px;color:rgba(194,203,234,.55);transition:color .3s ease;user-select:none}
-  .bmeta .kt2:hover{color:rgba(205,211,221,.95)} .bmeta .kt2.on{color:#fff}
-  .bmeta .kt2 .cdot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:7px;
-    vertical-align:middle;background:currentColor;box-shadow:0 0 8px 1px currentColor;opacity:.5;transition:opacity .3s}
-  .bmeta .kt2:hover .cdot,.bmeta .kt2.on .cdot{opacity:1}
-  .bmeta .seal{margin:17px 0 0;font-size:12.5px;color:rgba(205,211,221,.78);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .bmeta .seal b{color:#fff;font-weight:400} .bmeta .seal .sep{opacity:.4}
-  .bmeta .seal a{color:var(--a-khaki);text-decoration:none;border-bottom:1px solid rgba(212,190,120,.3);padding-bottom:1px}
-  /* a private shelf, not a control — so it must not look like the threads above it */
-  .bmeta .keep{margin:11px 0 0;width:fit-content;font-style:italic;font-size:12.5px;
-    color:rgba(194,203,234,.4);cursor:pointer;transition:color .35s ease;user-select:none}
-  .bmeta .keep:hover{color:rgba(205,211,221,.9)}
+  .bmeta .kt2{cursor:pointer;font-size:13px;color:rgba(194,203,234,.5);transition:color .3s ease;user-select:none}
+  .bmeta .kt2:hover,.bmeta .kt2.on{color:#fff}
+  .bmeta .kt2 .cdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:middle;
+    border:1px solid rgba(194,203,234,.4);background:transparent;transition:background .3s,border-color .3s,box-shadow .3s}
+  .bmeta .kt2:hover .cdot,.bmeta .kt2.on .cdot{background:var(--tc);border-color:var(--tc);box-shadow:0 0 8px 1px var(--tc)}
+  .bmeta .seal{margin:16px 0 0;font-size:12.5px;color:rgba(205,211,221,.7);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .bmeta .seal b{color:rgba(255,255,255,.92);font-weight:400} .bmeta .seal .sep{opacity:.4}
+  .bmeta .seal a{color:var(--a-khaki);text-decoration:none;transition:color .3s ease}
+  .bmeta .seal a:hover{color:#fff}
+  /* a private shelf, not a control — the hexagon means KEEP and nothing else on
+     this panel (outline = not kept, filled = kept). */
+  .bmeta .keep{margin:13px 0 0;width:fit-content;font-size:12.5px;
+    color:rgba(194,203,234,.42);cursor:pointer;transition:color .35s ease;user-select:none}
+  .bmeta .keep:hover{color:rgba(205,211,221,.9)} .bmeta .keep.kept{color:var(--a-khaki)}
   /* the kin page — takes the words' place rather than adding a column */
   .brel{display:none;flex:1 1 auto;min-height:0;overflow-y:auto;animation:relin .45s ease both}
   .bmeta.showrel .words{display:none} .bmeta.showrel .brel{display:block}
   @keyframes relin{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
-  .brel .rhead{font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--a-khaki);
+  /* just the works, no titles — a quiet grid of thumbnails. One lowercase header
+     names the thread; the piece's own words survive as a hover title. */
+  .brel .rhead{font-size:11px;letter-spacing:.1em;color:rgba(194,203,234,.5);
     margin:0 0 11px;position:sticky;top:0;background:linear-gradient(rgba(9,11,14,.97),rgba(9,11,14,.72));padding:1px 0 8px;z-index:2}
-  .rrow{display:flex;align-items:center;gap:12px;padding:4px 0;cursor:pointer}
-  .rrow img{width:46px;height:46px;flex:0 0 auto;object-fit:cover;border-radius:5px;background:#11161b;
-    border:1px solid rgba(205,211,221,.12);transition:border-color .3s,box-shadow .3s}
-  .rrow .rn{font-style:italic;font-size:13.5px;line-height:1.45;color:rgba(205,211,221,.6);transition:color .3s;
-    overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:8px}
+  .rrow{cursor:pointer;aspect-ratio:1;border-radius:5px;overflow:hidden}
+  .rrow img{width:100%;height:100%;display:block;object-fit:cover;background:#11161b;
+    border:1px solid rgba(205,211,221,.12);border-radius:5px;transition:border-color .3s,box-shadow .3s}
   .rrow:hover img{border-color:rgba(212,190,120,.6);box-shadow:0 0 14px rgba(212,190,120,.2)}
-  .rrow:hover .rn{color:#fff}
-  .brel .rmore{font-style:italic;font-size:12.5px;color:rgba(194,203,234,.34);margin:10px 0 0}
+  .brel .rmore{font-size:12px;color:rgba(194,203,234,.34);margin:12px 0 0}
   .bclose{position:absolute;top:clamp(16px,3vw,30px);left:clamp(18px,4vw,46px);z-index:5;color:rgba(205,211,221,.75);
     font-size:12.5px;letter-spacing:.06em;cursor:pointer;transition:color .3s}
   .bclose:hover{color:#fff}
@@ -1110,7 +1116,7 @@ addEventListener("pointerup",function(e){
 var bloom=document.getElementById("bloom"), bsay=document.getElementById("bsay");
 var bwrapEl=document.getElementById("bwrap"), brel=document.getElementById("brel");
 var bhead=document.getElementById("bhead"), bwords=document.getElementById("bwords"), bfoot=document.getElementById("bfoot");
-var REL_SHOWN=7;                       // enough to feel like company, few enough to stay calm
+var REL_SHOWN=12;                      // a calm grid of thumbnails — a few rows, then "…and more"
 var HEX='<svg width="12" height="13" viewBox="0 0 12 13" aria-hidden="true"><path d="M6 .7 11 3.4v6.2L6 12.3 1 9.6V3.4z" fill="none" stroke="#C3BD8E" stroke-width="1.1"/></svg>';
 var activeRelKey=null, currentWork=null;
 function bloomOpen(){ return bloom.classList.contains("on"); }
@@ -1138,10 +1144,11 @@ function openRel(w,k){
      list of a few people beats a contact sheet: this is meeting, not browsing. */
   var rel=relatedTo(w,k), shown=rel.slice(0,REL_SHOWN);
   brel.innerHTML='<div class="rhead">'+esc(k.panelTitle)+'</div>'
-    +shown.map(function(x){ return '<div class="rrow" data-d="'+x.drop+'">'
-      +'<img loading="lazy" referrerpolicy="no-referrer" src="'+x.img+'" alt="">'
-      +'<span class="rn">'+esc(rowLabel(x,k))+'</span></div>'; }).join("")
-    +(rel.length>shown.length? '<p class="rmore">…and others, along the thread</p>' : "");
+    +'<div class="rgrid">'
+    +shown.map(function(x){ return '<div class="rrow" data-d="'+x.drop+'" title="'+esc(rowLabel(x,k))+'">'
+      +'<img loading="lazy" referrerpolicy="no-referrer" src="'+x.img+'" alt=""></div>'; }).join("")
+    +'</div>'
+    +(rel.length>shown.length? '<p class="rmore">…and more along this thread</p>' : "");
   brel.querySelectorAll(".rrow").forEach(function(el){ el.addEventListener("click",function(){
     var nx=WORKS.find(function(y){ return y.drop===el.dataset.d; }); if(nx) navigate(nx); }); });
   bsay.classList.add("showrel"); activeRelKey=k.key;
@@ -1164,24 +1171,30 @@ function closeBloom(){ closeRel(); bloom.classList.remove("on"); }
 function openWork(w){
   currentWork=w;
   document.getElementById("bimg").src=w.img;
-  var wit=w.witnesses.map(function(x){ return HEX+' <b>'+esc(x)+'</b>'; }).join("&nbsp;&nbsp;");
+  // witness names, upright, no hexagon bullets — the ⬡ belongs to KEEP alone now.
+  var wit=w.witnesses.map(function(x){ return '<b>'+esc(x)+'</b>'; }).join(", ");
   var kinds=KINDS.filter(function(k){ return relatedTo(w,k).length; });
-  var threads=kinds.length? '<div class="threads2"><span class="lead">follow</span>'
-    +kinds.map(function(k){ return '<span class="kt2" data-k="'+k.key+'"><span class="cdot" style="color:'+k.color+'"></span>'+esc(k.chipLabel)+'</span>'; }).join("")+'</div>' : "";
+  // each thread carries its colour on --tc; the dot only lights when it's active.
+  var threads=kinds.length? '<div class="threads2">'
+    +kinds.map(function(k){ return '<span class="kt2" data-k="'+k.key+'" style="--tc:'+k.color+'"><span class="cdot"></span>'+esc(k.chipLabel)+'</span>'; }).join("")+'</div>' : "";
 
-  /* one "see all by X" per named maker → the wall, that hand's whole grid. Hidden
-     for outsiders (no 6529 name to gather); one line each for collaborations. */
-  var seeAll=(w.makers||[]).map(function(m){
-    return '<div class="seeall"><a href="wall.html#by='+encodeURIComponent(m)+'">see all by '+esc(m)+' →</a></div>'; }).join("");
-  bhead.innerHTML='<p class="eyebrow2">an OUTSIDER</p><h2 class="maker">'+esc(makerLabel(w))+'</h2>'+seeAll;
+  /* "see all" → the wall, this hand's whole grid. Rides beside the name (hidden
+     for outsiders with no 6529 name); collaborations name each maker. */
+  var links=(w.makers||[]).map(function(m){
+    return '<a href="wall.html#by='+encodeURIComponent(m)+'">'+(w.makers.length>1?esc(m):"see all")+' →</a>'; });
+  var seeAll=links.length
+    ? '<span class="seeall">'+(w.makers.length>1?'see all: '+links.join('<span class="sep">·</span>'):links[0])+'</span>' : "";
+  bhead.innerHTML='<p class="eyebrow2">an OUTSIDER</p>'
+    +'<div class="namerow"><h2 class="maker">'+esc(makerLabel(w))+'</h2>'+seeAll+'</div>';
   bwords.textContent=w.full||"";
   bfoot.innerHTML=threads
     +'<div class="seal">witnessed by '+wit+' <span class="sep">·</span> <a href="'+dropUrl(w)+'" target="_blank" rel="noopener">read on 6529 ↗</a></div>'
-    +'<div class="keep" data-keep="1">'+(isKept(w)?"⬡ kept — release it":"⬡ keep this")+'</div>';
+    +'<div class="keep'+(isKept(w)?' kept':'')+'" data-keep="1" title="'+(isKept(w)?'release it':'keep this')+'">'+(isKept(w)?"⬢ kept":"⬡ keep")+'</div>';
 
   bsay.classList.remove("showrel"); brel.innerHTML=""; activeRelKey=null;
   bfoot.querySelector("[data-keep]").addEventListener("click",function(){
-    toggleKept(w); this.textContent=isKept(w)?"⬡ kept — release it":"⬡ keep this"; });
+    toggleKept(w); var on=isKept(w); this.classList.toggle("kept",on);
+    this.textContent=on?"⬢ kept":"⬡ keep"; this.title=on?"release it":"keep this"; });
   bfoot.querySelectorAll(".kt2").forEach(function(c){ c.addEventListener("click",function(){
     toggleRel(w,KINDS.find(function(x){ return x.key===c.dataset.k; })); }); });
   bloom.classList.add("on");
