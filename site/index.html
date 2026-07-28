@@ -22,54 +22,85 @@
       radial-gradient(1.5px 1.5px at 8% 78%, rgba(255,255,255,.3), transparent),
       radial-gradient(1px 1px at 48% 30%, rgba(255,255,255,.25), transparent);
     background-repeat:no-repeat}
-  main{max-width:640px;margin:0 auto;padding:12vh 26px 90px}
 
-  .eyebrow{font-size:11.5px;letter-spacing:.36em;text-transform:uppercase;color:var(--muted);
-    text-align:center;margin:0 0 18px}
+  /* ── the bridge: a thin frame carried over from articulate.art, so arriving
+       from the parent site is a step through a doorway, not into a new house ── */
+  .bar{position:fixed;top:0;left:0;right:0;z-index:6;display:flex;align-items:center;
+    justify-content:space-between;padding:17px clamp(20px,4vw,46px);pointer-events:none}
+  .bar a,.bar .sec{pointer-events:auto;font-size:12px;letter-spacing:.4em;text-transform:uppercase;
+    color:rgba(194,203,234,.5);text-decoration:none;transition:color .3s}
+  .bar a:hover{color:#fff}
+  .bar .sec{color:var(--a-khaki);opacity:.7;letter-spacing:.34em}  /* the gallery's accent, first appearance */
+
+  main{max-width:640px;margin:0 auto;padding:20vh 26px 118px;text-align:center}
+
+  .eyebrow{font-size:11.5px;letter-spacing:.36em;text-transform:uppercase;color:var(--muted);margin:0 0 20px}
+  /* the parent's register: a plain, upright statement — then the gallery answers
+     it in its own italic voice */
+  .declare{font-size:clamp(19px,2.6vw,26px);line-height:1.3;color:#fff;font-weight:400;
+    margin:0 0 14px;text-shadow:0 1px 24px rgba(0,0,0,.6)}
   h1{font-size:clamp(32px,6vw,50px);line-height:1.08;font-weight:400;font-style:italic;
-    color:#fff;text-align:center;margin:0 0 22px;text-shadow:0 1px 30px rgba(0,0,0,.6)}
+    color:#fff;margin:0 0 22px;text-shadow:0 1px 30px rgba(0,0,0,.6)}
   .lede{font-size:clamp(16px,2vw,18.5px);line-height:1.65;font-style:italic;color:var(--text);
-    text-align:center;max-width:46ch;margin:0 auto 56px;opacity:.92}
+    max-width:46ch;margin:0 auto 54px;opacity:.9}
 
-  .cta{display:flex;flex-direction:column;align-items:center;gap:14px;margin:0 0 74px}
-  .btn{display:inline-block;font-family:var(--serif);font-style:italic;font-size:17px;
-    text-decoration:none;padding:15px 34px;border-radius:999px;transition:all .3s ease}
-  .btn.primary{color:#0a0d11;background:var(--a-khaki);box-shadow:0 8px 30px rgba(195,189,142,.25)}
+  /* actions are upright — voice leans, doors do not */
+  .cta{display:flex;flex-direction:column;align-items:center;gap:13px;margin:0 0 72px}
+  .btn{display:inline-block;font-family:var(--serif);font-size:16.5px;text-decoration:none;
+    padding:15px 34px;border-radius:999px;transition:all .3s ease}
+  .btn.primary{color:#0a0d11;background:var(--a-khaki);box-shadow:0 8px 30px rgba(195,189,142,.24)}
   .btn.primary:hover{background:#d8d2a5;box-shadow:0 8px 34px rgba(195,189,142,.4)}
-  .btn.ghost{color:rgba(194,203,234,.75);border:1px solid rgba(194,203,234,.28);
-    padding:12px 28px;font-size:15px}
+  .btn.ghost{color:rgba(194,203,234,.72);border:1px solid rgba(194,203,234,.26);padding:12px 28px;font-size:14.5px}
   .btn.ghost:hover{color:#fff;border-color:rgba(194,203,234,.55)}
+  .note{font-size:12.5px;color:rgba(194,203,234,.42);margin:4px 0 0;max-width:40ch}
 
-  section{margin:0 0 56px}
-  h2{font-size:11.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--a-khaki);
-    opacity:.85;margin:0 0 16px}
-  p{font-size:15.5px;line-height:1.75;color:rgba(226,230,245,.86);margin:0 0 14px}
-  p:last-child{margin-bottom:0}
-  strong{color:#fff;font-weight:400}
+  footer{font-size:12.5px;font-style:italic;color:rgba(194,203,234,.35)}
 
-  .threads{display:flex;flex-direction:column;gap:16px;margin:20px 0 0}
-  .thread{display:flex;gap:14px;align-items:baseline}
+  /* ── the quiet corner door to the longer story ── */
+  .about{position:fixed;bottom:clamp(14px,2.4vw,22px);right:clamp(18px,4vw,40px);z-index:6;
+    font-family:var(--serif);font-size:12.5px;letter-spacing:.06em;color:rgba(194,203,234,.5);
+    background:none;border:none;cursor:pointer;transition:color .3s;pointer-events:auto}
+  .about:hover{color:#fff}
+  .about:before{content:"⌕  ";opacity:.7}
+
+  /* ── the about sheet: the site's own overlay grammar (veil · ✕ · esc) ── */
+  .sheet{position:fixed;inset:0;z-index:20;opacity:0;transition:opacity .35s ease;overflow-y:auto}
+  .sheet[hidden]{display:none}
+  .sheet.on{opacity:1}
+  .sheet .veil{position:fixed;inset:0;background:
+    radial-gradient(60% 42% at 50% 0%, rgba(40,34,16,.32), rgba(8,11,14,.94) 55%, rgba(6,8,11,.98));
+    backdrop-filter:blur(7px)}
+  .sclose{position:fixed;top:clamp(16px,3vw,28px);left:clamp(18px,4vw,44px);z-index:2;
+    font-size:12.5px;letter-spacing:.06em;color:rgba(205,211,221,.75);cursor:pointer;transition:color .3s}
+  .sclose:hover{color:#fff}
+  .sheetin{position:relative;z-index:1;max-width:600px;margin:0 auto;padding:96px 26px 100px;
+    animation:sheetin .5s cubic-bezier(.2,.7,.2,1) both}
+  @keyframes sheetin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .sheetin .eyebrow{text-align:left}
+  .sheetin h2{font-size:11.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--a-khaki);
+    opacity:.85;margin:34px 0 14px}
+  .sheetin h2:first-of-type{margin-top:6px}
+  .sheetin p{font-size:15.5px;line-height:1.75;color:rgba(226,230,245,.85);margin:0 0 13px}
+  .sheetin strong{color:#fff;font-weight:400;font-style:italic}
+  .threads{display:flex;flex-direction:column;gap:14px;margin:18px 0 0}
+  .thread{display:flex;gap:13px;align-items:baseline}
   .thread .dot{flex:0 0 auto;width:8px;height:8px;border-radius:50%;margin-top:6px}
-  .thread .t{font-size:15.5px;line-height:1.65;color:rgba(226,230,245,.86)}
-  .thread .t b{color:#fff;font-style:italic;font-weight:400}
-
-  details{border-top:1px solid rgba(194,203,234,.14);padding-top:22px}
-  summary{cursor:pointer;font-size:11.5px;letter-spacing:.3em;text-transform:uppercase;
-    color:var(--a-khaki);opacity:.85;list-style:none;user-select:none}
-  summary::-webkit-details-marker{display:none}
-  summary:before{content:"+ ";opacity:.6}
-  details[open] summary:before{content:"– "}
-  details p{margin-top:16px}
-  a.inline{color:var(--a-khaki);text-decoration:none;border-bottom:1px solid rgba(212,190,120,.35)}
+  .thread .t{font-size:15px;line-height:1.6;color:rgba(226,230,245,.85)}
+  .thread .t b{color:#fff;font-weight:400}
+  a.inline{color:var(--a-khaki);text-decoration:none;border-bottom:1px solid rgba(212,190,120,.32)}
   a.inline:hover{color:#fff}
-
-  footer{text-align:center;font-size:12px;font-style:italic;color:rgba(194,203,234,.35);
-    margin-top:70px}
 </style>
 </head>
 <body>
+
+<header class="bar">
+  <a class="home" href="https://articulate.art">Articulate</a>
+  <span class="sec">Outsiders</span>
+</header>
+
 <main>
-  <p class="eyebrow">OUTSIDERS</p>
+  <p class="eyebrow">Outsiders</p>
+  <p class="declare">Where the movement sees itself.</p>
   <h1>The Constellation Gallery</h1>
   <p class="lede">A living wall of the work this community has witnessed —
     gathered from inside the OUTSIDERS wave, refreshed as it happens.</p>
@@ -77,12 +108,21 @@
   <div class="cta">
     <a class="btn primary" href="wall.html">Enter the Gallery</a>
     <a class="btn ghost" href="immersive.html">The Immersive Experience ↗</a>
-  <p style="font-size: 0.8em; font-style: italic;">The immersive experience will only load if your device and Internet are fast enough</p></div>
+    <p class="note">The immersive experience loads only where your device and connection can carry it.</p>
+  </div>
 
-  
-  <section>
-  <details>
-    <summary>What this is</summary>
+  <footer>a hand, a phone, a wave — and whoever stopped to look</footer>
+</main>
+
+<button class="about" id="aboutBtn" aria-haspopup="dialog">about</button>
+
+<div class="sheet" id="aboutSheet" role="dialog" aria-label="About OUTSIDERS" hidden>
+  <div class="veil" data-close></div>
+  <span class="sclose" id="aboutClose">✕&nbsp; close</span>
+  <div class="sheetin">
+    <p class="eyebrow">Outsiders · about</p>
+
+    <h2>What this is</h2>
     <p>OUTSIDERS isn't a submission box. Someone makes something and shares it
       into the wave. Someone else — already trusted inside the community —
       stops, looks, and marks it <strong>:outsiders:</strong>. That mark is a
@@ -90,8 +130,6 @@
       it belongs. Nothing here is counted, ranked, or approved by a gatekeeper.
       A work is on this wall because it was seen.</p>
 
-
-  <section>
     <h2>Threads</h2>
     <p>Every work carries two threads back into the community. Follow either
       one, and the wall reshapes around that person's own constellation.</p>
@@ -101,9 +139,7 @@
       <div class="thread"><span class="dot" style="background:var(--a-green);box-shadow:0 0 8px 1px var(--a-green)"></span>
         <span class="t"><b>their witness</b> — whoever stopped long enough to mark it, and everything else they've vouched for.</span></div>
     </div>
-  </section>
 
-  <section>
     <h2>Why being witnessed matters</h2>
     <p>To be an outsider is to make work that lives outside the gallery, the
       feed algorithm, the marketplace — visible only if someone chooses to
@@ -112,29 +148,29 @@
       it's the one that completes it</strong> — someone else, already vouched
       for themselves, saw it and said so. Everything on this wall is built out
       of that second act: not what was made, but what was seen.</p>
-  </section>
 
-  <section>
     <h2>Make it yours</h2>
     <p>Search a name to follow their thread. Tap the <strong>⬡</strong> on any
       work to keep it — build your own curated gallery, private to your
       browser, yours to revisit whenever you come back.</p>
-  </details>
-    </section>
-    
 
-  <section>
-    <details>
-      <summary>How this stays alive</summary>
-      <p>This wall isn't uploaded to — it's read. Every 6 hours, an automated
-        crawl re-reads the <a class="inline" href="https://6529.io/my-stream?wave=815542b5-e8a5-4380-b825-5823a91c4c71" target="_blank" rel="noopener">OUTSIDERS wave</a>
-        on 6529, checks who's inside the community's chain of trust, and
-        rebuilds the gallery from whatever's been witnessed since. Nobody
-        manages it by hand, and nobody has to remember.</p>
-    </details>
-  </section>
+    <h2>How this stays alive</h2>
+    <p>This wall isn't uploaded to — it's read. Every 6 hours, an automated
+      crawl re-reads the <a class="inline" href="https://6529.io/my-stream?wave=815542b5-e8a5-4380-b825-5823a91c4c71" target="_blank" rel="noopener">OUTSIDERS wave</a>
+      on 6529, checks who's inside the community's chain of trust, and
+      rebuilds the gallery from whatever's been witnessed since. Nobody
+      manages it by hand, and nobody has to remember.</p>
+  </div>
+</div>
 
-  <footer>a hand, a phone, a wave — and whoever stopped to look</footer>
-</main>
+<script>
+  var sheet=document.getElementById("aboutSheet");
+  function openAbout(){ sheet.hidden=false; requestAnimationFrame(function(){ sheet.classList.add("on"); }); document.body.style.overflow="hidden"; }
+  function closeAbout(){ sheet.classList.remove("on"); document.body.style.overflow=""; setTimeout(function(){ sheet.hidden=true; },360); }
+  document.getElementById("aboutBtn").addEventListener("click",openAbout);
+  document.getElementById("aboutClose").addEventListener("click",closeAbout);
+  sheet.addEventListener("click",function(e){ if(e.target.hasAttribute("data-close")) closeAbout(); });
+  addEventListener("keydown",function(e){ if(e.key==="Escape" && !sheet.hidden) closeAbout(); });
+</script>
 </body>
 </html>
