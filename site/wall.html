@@ -130,6 +130,7 @@
     <div id="ac"></div>
   </div>
 </div>
+<span class="bclose" id="tosky" style="display:none">←&nbsp; back to the constellation</span>
 <div id="pillwrap"><span class="pill" id="pill"></span></div>
 <div id="gridwrap"><div id="grid"></div><p id="empty" style="display:none"></p></div>
 
@@ -339,7 +340,25 @@ document.addEventListener("keydown",function(e){
   if(bloomOpen()){ closeBloom(); return; }
 });
 
-renderGrid(SHUFFLED,null);
+/* ════════ ARRIVAL FROM THE CONSTELLATION ════════
+   A star shows one piece; "see all by X" hands off here as wall.html#by=<name>,
+   landing on that maker's whole grid (the same view "follow this author" builds).
+   The in-window "back to the constellation" then returns you — via history.back()
+   so the live 3D scene resumes exactly where you left it (bfcache), falling back
+   to a fresh immersive.html only when the deep link was opened cold. */
+var toskyEl=document.getElementById("tosky");
+toskyEl.addEventListener("click",function(){
+  if(document.referrer && /\/immersive\.html(?:[?#]|$)/.test(document.referrer)) history.back();
+  else location.href="immersive.html";
+});
+function nameFromHash(){ var m=/^#by=(.+)$/.exec(location.hash||""); return m?decodeURIComponent(m[1].replace(/\+/g," ")):null; }
+function applyHash(){
+  var name=nameFromHash();
+  if(name){ renderGrid(worksOf(name,"maker"), name); toskyEl.style.display="inline-block"; window.scrollTo(0,0); }
+  else renderGrid(SHUFFLED,null);
+}
+addEventListener("hashchange",applyHash);
+applyHash();
 document.getElementById("loading").classList.add("gone");
 })();
 </script>

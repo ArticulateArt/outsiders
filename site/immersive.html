@@ -171,6 +171,11 @@
   .bhead,.bfoot{flex:0 0 auto}
   .bmeta .eyebrow2{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--a-khaki);margin:0 0 .5em;opacity:.85}
   .bmeta .maker{font-size:clamp(28px,3.6vw,44px);line-height:1.03;color:#fff;font-style:italic;font-weight:400;margin:0 0 .45em}
+  /* the doorway to this hand's whole body of work — the constellation shows one
+     piece, the wall shows all of them (see wall.html#by=<name>) */
+  .bmeta .seeall{margin:0 0 3px;font-size:13.5px;font-style:italic;line-height:1.5}
+  .bmeta .seeall a{color:var(--a-khaki);text-decoration:none;border-bottom:1px solid rgba(212,190,120,.32);padding-bottom:1px;transition:color .3s ease}
+  .bmeta .seeall a:hover{color:#fff}
   /* The page area is the only thing that scrolls, and it is capped — so a three-word
      entry and a thousand-word one have the same silhouette. Before this, .bmeta had no
      height at all and long text ran off the bottom of a clipped overlay, unreachable. */
@@ -1164,7 +1169,11 @@ function openWork(w){
   var threads=kinds.length? '<div class="threads2"><span class="lead">follow</span>'
     +kinds.map(function(k){ return '<span class="kt2" data-k="'+k.key+'"><span class="cdot" style="color:'+k.color+'"></span>'+esc(k.chipLabel)+'</span>'; }).join("")+'</div>' : "";
 
-  bhead.innerHTML='<p class="eyebrow2">an OUTSIDER</p><h2 class="maker">'+esc(makerLabel(w))+'</h2>';
+  /* one "see all by X" per named maker → the wall, that hand's whole grid. Hidden
+     for outsiders (no 6529 name to gather); one line each for collaborations. */
+  var seeAll=(w.makers||[]).map(function(m){
+    return '<div class="seeall"><a href="wall.html#by='+encodeURIComponent(m)+'">see all by '+esc(m)+' →</a></div>'; }).join("");
+  bhead.innerHTML='<p class="eyebrow2">an OUTSIDER</p><h2 class="maker">'+esc(makerLabel(w))+'</h2>'+seeAll;
   bwords.textContent=w.full||"";
   bfoot.innerHTML=threads
     +'<div class="seal">witnessed by '+wit+' <span class="sep">·</span> <a href="'+dropUrl(w)+'" target="_blank" rel="noopener">read on 6529 ↗</a></div>'
