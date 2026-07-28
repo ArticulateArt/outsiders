@@ -116,18 +116,6 @@
   #threads .kt .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-left:9px;vertical-align:middle;
     border:1px solid rgba(194,203,234,.4);background:transparent;transition:background .3s,border-color .3s,box-shadow .3s}
   #threads .kt:hover .dot,#threads .kt.on .dot{background:var(--tc);border-color:var(--tc);box-shadow:0 0 8px 1px var(--tc)}
-  /* kin: the OTHER people this thread reaches, deduped by person — never a
-     repeated name; a prolific same-hand author simply shows none. */
-  #threads .khead{font-size:11px;letter-spacing:.1em;color:rgba(194,203,234,.5);margin:6px 0 0;text-shadow:0 1px 10px #000}
-  #threads .kin{margin-top:4px;display:flex;flex-direction:column;gap:7px;align-items:flex-end}
-  #threads .kin .kn{display:flex;align-items:center;gap:9px;cursor:pointer;pointer-events:auto;max-width:100%}
-  #threads .kin .kn img{width:34px;height:34px;object-fit:cover;border-radius:5px;flex:0 0 auto;
-    border:1px solid rgba(205,211,221,.14);transition:border-color .3s,box-shadow .3s}
-  #threads .kin .kn:hover img{border-color:rgba(212,190,120,.6);box-shadow:0 0 14px rgba(212,190,120,.2)}
-  #threads .kin .kn .nm{font-size:12.5px;color:rgba(205,211,221,.6);transition:color .3s;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;order:-1}
-  #threads .kin .kn:hover .nm{color:#fff}
-  #threads .kin .more{font-size:12.5px;color:rgba(194,203,234,.35)}
 
   /* snippets — works surfacing inside their fireflies' glow as you draw near */
   #snips{position:fixed;inset:0;z-index:3;pointer-events:none}
@@ -286,7 +274,7 @@
 <div id="snips"></div>
 <div id="threads" class="hud"></div>
 <div id="tip"></div>
-<div class="hint hud">W A S D to fly · space rises, shift sinks · drag to look around · esc brings you home · click a light to meet someone</div>
+<div class="hint hud">W A S D to fly · space rises, shift sinks · drag to look around · esc brings you home · click a light to find someone</div>
 
 <div id="bloom">
   <div class="veilbg"></div>
@@ -870,33 +858,16 @@ function updateMenu(){
       h+='<div class="kt'+(on?" on":"")+'" data-k="'+k.key+'" style="--tc:'+k.color+'">'+esc(k.menuLabel)+
          '<span class="dot"></span></div>';
     });
-    // kin = the OTHER people this thread reaches, deduped by person and with the
-    // focused person removed. Down "the same hand" that is everyone → nobody, so
-    // the messy repeated-name list is gone; the wall link carries their others.
-    if(selKind&&kinStars.length){
-      var fmk=(w.makers&&w.makers[0])||null, seen={}, people=[];
-      kinStars.forEach(function(s){
-        var m=(s.work.makers&&s.work.makers[0])||("~"+s.work.drop); // an outsider stands alone
-        if(m===fmk||seen[m]) return; seen[m]=1; people.push(s);
-      });
-      if(people.length){
-        h+='<div class="kin"><div class="khead">'+esc(selKind.label)+'</div>';
-        people.slice(0,6).forEach(function(s){
-          h+='<div class="kn" data-i="'+s.i+'"><img loading="lazy" referrerpolicy="no-referrer" src="'+s.work.img+'" alt="">'+
-             '<span class="nm">'+esc(makerLabel(s.work))+'</span></div>'; });
-        if(people.length>6) h+='<div class="more">…and more</div>';
-        h+='</div>';
-      }
-    }
+    // No kin list: the lit constellation in the FIELD already is "who this
+    // thread reaches". A side column of thumbnails only repeated that, and down
+    // "the same hand" it stacked one name over and over. The figure does the
+    // work; the panel stays the person, their work, and the three threads.
   }
   threadsEl.innerHTML=h;
   var mw=threadsEl.querySelector("[data-open]");
   if(mw) mw.addEventListener("click",function(){ if(focusStar) openWork(focusStar.work); });
   threadsEl.querySelectorAll(".kt").forEach(function(el){
     el.addEventListener("click",function(){ setKind(KINDS.find(function(k){return k.key===el.dataset.k;})); });
-  });
-  threadsEl.querySelectorAll(".kn").forEach(function(el){
-    el.addEventListener("click",function(){ setFocus(STARS[+el.dataset.i]); });
   });
 }
 updateMenu();
@@ -1079,7 +1050,7 @@ function hoverStep(){
     skyEl.style.cursor="pointer";
     var sp,label,sub="";
     if(p.kind==="star"){ sp=screenPos(drawPosOf(posOf(p.obj),p.obj.phase)); label=esc(makerLabel(p.obj.work));
-      if(p.obj===focusStar) sub="touch again to meet them";
+      if(p.obj===focusStar) sub="click again to meet them";
     } else { sp=screenPos(drawPosOf(p.obj.pos,p.obj.phase)); label="⬡ "+esc(p.obj.witness); sub="a witness"; }
     if(!sp){ tip.style.opacity=0; return; }
     tip.innerHTML=label+(sub?'<span class="b">'+sub+"</span>":"");
