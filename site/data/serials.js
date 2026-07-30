@@ -3,11 +3,12 @@
    (WAVE = 815542b5-e8a5-4380-b825-5823a91c4c71 = "Outsiders Rep Grant Submissions").
    Any drop NOT in this map falls back gracefully to the 6529 homepage in the viewers.
 
-   Baked 2026-07-30 by producer/bake-serials.js — 158/158 works covered.
+   Baked 2026-07-30 by producer/bake-serials.js — 159/159 works covered.
    The wave's feed is wallet-gated, but single drops read fine anonymously, so this is
    built by asking for each drop id in portrait.json directly. Re-run after any re-bake
    of portrait.json; it only fetches ids it does not already have. */
 window.DROP_SERIALS = {
+  "226d1ce4-1be8-4060-973c-da13456ed4cb": 1256513,
   "048c8f34-3032-4328-96d0-d7c6e539ca4a": 1256361,
   "830041d0-b3b3-4de9-bf6c-e3ad3eeced9d": 1256345,
   "a6595ea2-8638-4b0c-a877-ffc5ca623b81": 1252049,
