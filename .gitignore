@@ -15,3 +15,9 @@ drawings/SVG edits/
 
 # founder feedback screen-recordings — kept on disk, far too large to version
 recordings/
+
+# internal design/decision handover — local only, never published
+HANDOVER.md
+
+# AI-tool config/local dev harness — not part of the deployed site
+.claude/

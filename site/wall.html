@@ -35,13 +35,13 @@
   #ac .it .who{font-style:normal;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-left:9px}
   #ac .it:active,#ac .it.sel{background:rgba(195,189,142,.14);color:#fff}
 
-  /* ─── the pill: current filter, dismissible ─── */
-  #pillwrap{text-align:center;min-height:0;transition:min-height .25s ease}
+  /* ─── the pills: current filters, dismissible — more than one can stack (search adds) ─── */
+  #pillwrap{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:0 18px;
+    min-height:0;transition:min-height .25s ease}
   #pillwrap.on{min-height:44px}
-  .pill{display:none;margin:16px auto 0;width:fit-content;font-style:italic;font-size:13.5px;
+  .pill{display:inline-flex;margin:16px 0 0;width:fit-content;font-style:italic;font-size:13.5px;
     color:rgba(255,255,255,.9);border:1px solid rgba(212,190,120,.4);border-radius:999px;
     padding:7px 10px 7px 16px;align-items:center;gap:9px;background:rgba(212,190,120,.08)}
-  #pillwrap.on .pill{display:inline-flex}
   .pill .x{cursor:pointer;font-style:normal;color:rgba(194,203,234,.6);padding:2px 5px;font-size:15px;line-height:1}
   .pill .x:active{color:#fff}
 
@@ -58,7 +58,8 @@
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .tl .bk{position:absolute;top:7px;right:7px;width:28px;height:28px;border-radius:50%;
     background:rgba(6,8,11,.55);display:flex;align-items:center;justify-content:center;
-    font-size:14px;color:rgba(255,255,255,.65);backdrop-filter:blur(3px)}
+    font-size:14px;color:rgba(255,255,255,.65);backdrop-filter:blur(3px);transition:color .25s ease;
+    cursor:pointer;user-select:none}
   .tl .bk.on{color:var(--a-khaki)}
   #empty{text-align:center;font-style:italic;font-size:14px;color:rgba(194,203,234,.45);
     padding:60px 24px;max-width:40ch;margin:0 auto}
@@ -71,35 +72,43 @@
     text-shadow:0 1px 10px #000}
   #foot span:active{color:#fff}
 
-  /* ─── the lightbox (single column: image, then words) ─── */
-  #bloom{position:fixed;inset:0;z-index:10;display:none;opacity:0;transition:opacity .4s ease;overflow-y:auto}
+  /* ─── the lightbox — same visual language as immersive.html's bloom, stacked single-column ─── */
+  #bloom{position:fixed;inset:0;z-index:10;display:none;opacity:0;transition:opacity .5s ease;overflow-y:auto}
   #bloom.on{display:block;opacity:1}
-  #bloom .veilbg{position:fixed;inset:0;background:
-    radial-gradient(58% 40% at 50% 0%, rgba(64,52,22,.35), rgba(8,11,14,.92) 55%, rgba(6,8,11,.98))}
-  .bwrap{position:relative;z-index:2;max-width:560px;margin:0 auto;padding:60px 18px 80px;
-    animation:bloomin .5s cubic-bezier(.2,.7,.2,1) both}
+  #bloom .veilbg{position:fixed;inset:0;backdrop-filter:blur(9px);background:
+    radial-gradient(58% 40% at 50% 0%, rgba(64,52,22,.4), rgba(8,11,14,.9) 55%, rgba(6,8,11,.98))}
+  .bwrap{position:relative;z-index:2;max-width:560px;margin:0 auto;padding:64px 20px 80px;
+    display:flex;flex-direction:column;align-items:center;gap:16px;
+    animation:bloomin .55s cubic-bezier(.2,.7,.2,1) both}
   @keyframes bloomin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-  .bpic{text-align:center}
-  .bpic img{max-width:100%;max-height:52vh;object-fit:contain;border-radius:7px;cursor:zoom-in;
-    box-shadow:0 30px 90px rgba(0,0,0,.7),0 0 0 1px rgba(212,190,120,.25)}
-  .bmeta{margin-top:22px;text-shadow:0 1px 18px rgba(6,8,11,.95)}
-  .bmeta .eyebrow2{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--a-khaki);margin:0 0 .5em;opacity:.85}
-  .bmeta .maker{font-size:clamp(23px,6vw,30px);line-height:1.1;color:#fff;font-style:italic;font-weight:400;margin:0 0 .6em}
-  .bmeta .words{font-size:16px;line-height:1.65;color:rgba(255,255,255,.9);font-style:italic;
-    white-space:pre-line;padding-left:14px;border-left:1px solid rgba(212,190,120,.4);margin:0}
-  .bmeta .threads2{margin:20px 0 0;display:flex;flex-wrap:wrap;gap:9px}
-  .bmeta .threads2 .lead{width:100%;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(194,203,234,.45);margin-bottom:2px}
-  .bmeta .kt2{font-style:italic;font-size:13.5px;color:rgba(205,211,221,.85);border:1px solid rgba(205,211,221,.22);
-    border-radius:999px;padding:6px 13px}
-  .bmeta .kt2 .cdot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:7px;vertical-align:middle;background:currentColor;box-shadow:0 0 7px 1px currentColor}
-  .bmeta .seal{margin:20px 0 0;font-size:12.5px;color:rgba(205,211,221,.8);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-  .bmeta .seal b{color:#fff;font-weight:400} .bmeta .seal .sep{opacity:.4}
-  .bmeta .seal a{color:var(--a-khaki);text-decoration:none;border-bottom:1px solid rgba(212,190,120,.3);padding-bottom:1px}
-  .bmeta .keep{margin:16px 0 0;width:fit-content;font-style:italic;font-size:13px;
-    color:rgba(194,203,234,.6);border:1px solid rgba(194,203,234,.25);border-radius:999px;padding:6px 13px;display:inline-block}
-  .bmeta .keep.on{color:var(--a-khaki);border-color:rgba(212,190,120,.5)}
-  .bclose{position:fixed;top:calc(14px + env(safe-area-inset-top));left:16px;z-index:11;color:rgba(205,211,221,.8);
-    font-size:13px;background:rgba(6,8,11,.55);border-radius:999px;padding:7px 14px;backdrop-filter:blur(3px)}
+  .bpic{position:relative;text-align:center}
+  .bpic::before{content:"";position:absolute;inset:-15%;border-radius:50%;z-index:-1;filter:blur(6px);
+    background:radial-gradient(circle,rgba(255,240,205,.28),rgba(212,190,120,0) 70%)}
+  .bpic img{display:block;max-width:88vw;max-height:46vh;object-fit:contain;border-radius:7px;cursor:zoom-in;
+    margin:0 auto;box-shadow:0 30px 90px rgba(0,0,0,.7),0 0 0 1px rgba(212,190,120,.28)}
+  .bpic .zhint{display:block;font-style:italic;font-size:11.5px;letter-spacing:.03em;color:transparent;
+    transition:color .45s ease;pointer-events:none;user-select:none;margin-top:8px}
+  .bpic:hover .zhint{color:rgba(194,203,234,.42)}
+  .bmeta{width:100%;text-shadow:0 1px 18px rgba(6,8,11,.95)}
+  .bmeta .eyebrow2{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--a-khaki);margin:0 0 .5em;opacity:.85}
+  .bmeta .maker{font-size:clamp(24px,7vw,32px);line-height:1.08;color:#fff;font-style:italic;font-weight:400;margin:0 0 .55em}
+  .bmeta .words{font-size:16px;line-height:1.7;color:rgba(255,255,255,.9);font-style:italic;
+    white-space:pre-line;padding-left:16px;border-left:1px solid rgba(212,190,120,.4);margin:0}
+  .bmeta .threads2{margin:20px 0 0;display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+  .bmeta .kt2{cursor:pointer;font-size:13px;color:rgba(194,203,234,.5);transition:color .3s ease;user-select:none}
+  .bmeta .kt2:hover,.bmeta .kt2:active{color:#fff}
+  .bmeta .kt2 .cdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:middle;
+    border:1px solid rgba(194,203,234,.4);background:transparent;transition:background .3s,border-color .3s,box-shadow .3s}
+  .bmeta .kt2:hover .cdot,.bmeta .kt2:active .cdot{background:var(--tc);border-color:var(--tc);box-shadow:0 0 8px 1px var(--tc)}
+  .bmeta .seal{margin:18px 0 0;font-size:12.5px;color:rgba(205,211,221,.7);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .bmeta .seal b{color:rgba(255,255,255,.92);font-weight:400} .bmeta .seal .sep{opacity:.4}
+  .bmeta .seal a{color:var(--a-khaki);text-decoration:none;transition:color .3s ease}
+  .bmeta .seal a:hover{color:#fff}
+  .bmeta .keep{margin:14px 0 0;width:fit-content;font-size:12.5px;
+    color:rgba(194,203,234,.42);cursor:pointer;transition:color .35s ease;user-select:none}
+  .bmeta .keep:hover,.bmeta .keep:active{color:rgba(205,211,221,.9)} .bmeta .keep.kept{color:var(--a-khaki)}
+  .bclose{position:fixed;top:calc(14px + env(safe-area-inset-top));left:16px;z-index:11;color:rgba(205,211,221,.75);
+    font-size:12.5px;letter-spacing:.06em;background:rgba(6,8,11,.55);border-radius:999px;padding:7px 14px;backdrop-filter:blur(3px)}
 
   #bzoom{position:fixed;inset:0;z-index:30;display:none;opacity:0;transition:opacity .3s ease;
     align-items:center;justify-content:center;background:rgba(4,6,9,.95)}
@@ -140,7 +149,7 @@
   <div class="veilbg"></div>
   <span class="bclose" id="bclose">✕&nbsp; back to the wall</span>
   <div class="bwrap" id="bwrap">
-    <div class="bpic"><img id="bimg" referrerpolicy="no-referrer" alt=""></div>
+    <div class="bpic"><img id="bimg" referrerpolicy="no-referrer" alt=""><span class="zhint">click to see it whole</span></div>
     <div class="bmeta" id="bsay"></div>
   </div>
 </div>
@@ -182,11 +191,11 @@ function relatedTo(w,k){ return WORKS.filter(function(x){ return x!==w && (k.tes
 /* same three kinds, same wording, as site/immersive.html's KINDS — the founder already
    signed off on this copy for the desktop experience */
 var KINDS=[
-  { key:"hand",   chipLabel:"their hand",    panelTitle:"the same hand",
+  { key:"hand",   chipLabel:"their hand",    panelTitle:"the same hand",       color:"var(--a-khaki)",
     test:function(a,b){ return b.makers.some(function(m){ return a.makers.indexOf(m)>=0; }); } },
-  { key:"eyes",   chipLabel:"their witness",  panelTitle:"seen by the same eyes",
+  { key:"eyes",   chipLabel:"their witness",  panelTitle:"seen by the same eyes", color:"var(--a-green)",
     test:function(a,b){ return b.witnesses.some(function(x){ return a.witnesses.indexOf(x)>=0; }); } },
-  { key:"chance", chipLabel:"by chance",      panelTitle:"a chance kinship",
+  { key:"chance", chipLabel:"by chance",      panelTitle:"a chance kinship",     color:"var(--a-red)",
     test:function(a,b){ return ((hash(a.drop)+hash(b.drop))%5)===0; } }
 ];
 
@@ -204,19 +213,20 @@ function toggleKept(w){ var i=KEPT.indexOf(w.drop); if(i>=0) KEPT.splice(i,1); e
 
 /* ════════ THE GRID ════════ */
 var gridEl=document.getElementById("grid"), emptyEl=document.getElementById("empty");
-var pillWrap=document.getElementById("pillwrap"), pillEl=document.getElementById("pill");
+var pillWrap=document.getElementById("pillwrap");
 var currentSet=SHUFFLED, currentLabel=null;
+/* names added via search — additive, not a replace: each pick unions its works into the
+   grid alongside whatever was already showing, with its own removable pill. */
+var selected=[];
 
 function tileHtml(w){
+  var kept=isKept(w);
   return '<div class="tl" data-d="'+w.drop+'">'
     +'<img loading="lazy" referrerpolicy="no-referrer" src="'+w.img+'" alt="">'
-    +'<span class="bk'+(isKept(w)?" on":"")+'" data-bk="1">⬡</span>'
+    +'<span class="bk'+(kept?" on":"")+'" data-bk="1">'+(kept?"⬢":"⬡")+'</span>'
     +'<span class="nm">'+esc(makerLabel(w))+'</span></div>';
 }
-function renderGrid(works,label){
-  currentSet=works; currentLabel=label||null;
-  if(label){ pillEl.innerHTML=esc(label)+'<span class="x" id="pillx">✕</span>'; pillWrap.classList.add("on"); }
-  else { pillWrap.classList.remove("on"); }
+function renderTiles(works){
   if(!works.length){ gridEl.style.display="none"; emptyEl.style.display="block";
     emptyEl.textContent="nothing along that thread yet."; return; }
   gridEl.style.display=""; emptyEl.style.display="none";
@@ -229,11 +239,50 @@ function renderGrid(works,label){
     el.querySelector("[data-bk]").addEventListener("click",function(ev){
       ev.stopPropagation();
       var w=WORKS.find(function(x){ return x.drop===el.dataset.d; }); if(!w) return;
-      toggleKept(w); this.classList.toggle("on",isKept(w));
+      toggleKept(w); var on=isKept(w);
+      this.classList.toggle("on",on); this.textContent=on?"⬢":"⬡";
     });
   });
 }
-pillWrap.addEventListener("click",function(e){ if(e.target.id==="pillx") renderGrid(SHUFFLED,null); });
+function renderPills(items){
+  if(!items.length){ pillWrap.classList.remove("on"); pillWrap.innerHTML=""; return; }
+  pillWrap.classList.add("on");
+  pillWrap.innerHTML=items.map(function(it,i){
+    return '<span class="pill" data-i="'+i+'">'+esc(it.text)+'<span class="x" data-i="'+i+'">✕</span></span>'; }).join("");
+  pillWrap.querySelectorAll(".x").forEach(function(el){
+    el.addEventListener("click",function(){ items[+el.dataset.i].onX(); });
+  });
+}
+/* a "replace" navigation (default view, a thread's related works, the constellation
+   deep-link) — one label, one pill, dismiss returns to the full shuffled wall. */
+function renderGrid(works,label){
+  selected=[]; currentSet=works; currentLabel=label||null;
+  renderTiles(works);
+  renderPills(label? [{text:label, onX:function(){ renderGrid(SHUFFLED,null); }}] : []);
+}
+function unionSelected(){
+  if(!selected.length) return SHUFFLED;
+  var seen={}, out=[];
+  selected.forEach(function(s){ worksOf(s.name,s.role).forEach(function(w){
+    if(!seen[w.drop]){ seen[w.drop]=1; out.push(w); } }); });
+  return out;
+}
+/* the additive search view — every selected name unions into one grid, each with its
+   own removable pill; picking a new name adds to it instead of replacing it. */
+function applySelected(){
+  var works=unionSelected();
+  currentSet=works; currentLabel=null;
+  renderTiles(works);
+  renderPills(selected.map(function(s,i){
+    return { text:(s.role==="witness"?"witnessed by ":"")+s.name,
+      onX:function(){ selected.splice(i,1); applySelected(); } };
+  }));
+}
+function addSelected(name,role){
+  if(!selected.some(function(s){ return s.name===name && s.role===role; })) selected.push({name:name,role:role});
+  applySelected();
+  window.scrollTo(0,0);
+}
 
 /* ════════ DETAIL VIEW — image, then words, then follow / witness / keep ════════ */
 var bloom=document.getElementById("bloom"), bsay=document.getElementById("bsay");
@@ -244,19 +293,18 @@ function openWork(w){
   document.getElementById("bimg").src=w.img;
   var wit=w.witnesses.map(function(x){ return '<b>'+esc(x)+'</b>'; }).join(", ");
   var kinds=KINDS.filter(function(k){ return relatedTo(w,k).length; });
-  var threads=kinds.length? '<div class="threads2"><span class="lead">follow</span>'
-    +kinds.map(function(k){ return '<span class="kt2" data-k="'+k.key+'"><span class="cdot" style="color:var(--a-'
-      +(k.key==="hand"?"khaki":k.key==="eyes"?"green":"red")+')"></span>'+esc(k.chipLabel)+'</span>'; }).join("")+'</div>' : "";
+  var threads=kinds.length? '<div class="threads2">'
+    +kinds.map(function(k){ return '<span class="kt2" data-k="'+k.key+'" style="--tc:'+k.color+'"><span class="cdot"></span>'+esc(k.chipLabel)+'</span>'; }).join("")+'</div>' : "";
   var words=esc(w.full||"");
   bsay.innerHTML='<p class="eyebrow2">an OUTSIDER</p>'
     +'<h2 class="maker">'+esc(makerLabel(w))+'</h2>'
     +(words?'<div class="words">'+words+'</div>':'')
     +threads
     +'<div class="seal">witnessed by '+wit+' <span class="sep">·</span> <a href="'+dropUrl(w)+'" target="_blank" rel="noopener">read on 6529 ↗</a></div>'
-    +'<div class="keep'+(isKept(w)?' on':'')+'" data-keep="1">'+(isKept(w)?"⬡ kept — release it":"⬡ keep this")+'</div>';
+    +'<div class="keep'+(isKept(w)?' kept':'')+'" data-keep="1" title="'+(isKept(w)?'release it':'keep this')+'">'+(isKept(w)?"⬢ kept":"⬡ keep")+'</div>';
   bsay.querySelector("[data-keep]").addEventListener("click",function(){
-    toggleKept(w); this.classList.toggle("on",isKept(w));
-    this.textContent=isKept(w)?"⬡ kept — release it":"⬡ keep this"; });
+    toggleKept(w); var on=isKept(w); this.classList.toggle("kept",on);
+    this.textContent=on?"⬢ kept":"⬡ keep"; this.title=on?"release it":"keep this"; });
   bsay.querySelectorAll(".kt2").forEach(function(c){ c.addEventListener("click",function(){
     var k=KINDS.find(function(x){ return x.key===c.dataset.k; });
     closeBloom();
@@ -278,7 +326,7 @@ function renderGallery(){
   var kept=KEPT.map(function(dd){ return WORKS.find(function(w){ return w.drop===dd; }); }).filter(Boolean);
   ggrid.innerHTML = kept.length
     ? kept.map(tileHtml).join("")
-    : '<p class="gsub" style="font-size:14px;max-width:40ch">nothing here yet — when you meet a work you love, choose <i>⬡ keep this</i>, or tap the ⬡ on any tile, and it will wait for you here.</p>';
+    : '<p class="gsub" style="font-size:14px;max-width:40ch">nothing here yet — when you meet a work you love, choose <i>⬡ keep</i>, or tap the ⬡ on any tile (it turns ⬢), and it will wait for you here.</p>';
   ggrid.querySelectorAll(".tl").forEach(function(el){
     el.addEventListener("click",function(e){
       if(e.target.closest("[data-bk]")) return;
@@ -323,8 +371,7 @@ function worksOf(name,role){
     : function(w){ return w.makers.indexOf(name)>=0; }); }
 function chooseName(n){
   hideAC(); searchInput.value=""; searchInput.blur();
-  renderGrid(worksOf(n.name,n.role), (n.role==="witness"?"witnessed by ":"")+n.name);
-  window.scrollTo(0,0);
+  addSelected(n.name, n.role);
 }
 searchInput.addEventListener("input",function(){ showAC(searchInput.value); });
 searchInput.addEventListener("keydown",function(e){
@@ -354,8 +401,8 @@ toskyEl.addEventListener("click",function(){
 function nameFromHash(){ var m=/^#by=(.+)$/.exec(location.hash||""); return m?decodeURIComponent(m[1].replace(/\+/g," ")):null; }
 function applyHash(){
   var name=nameFromHash();
-  if(name){ renderGrid(worksOf(name,"maker"), name); toskyEl.style.display="inline-block"; window.scrollTo(0,0); }
-  else renderGrid(SHUFFLED,null);
+  if(name){ selected=[{name:name,role:"maker"}]; applySelected(); toskyEl.style.display="inline-block"; window.scrollTo(0,0); }
+  else { selected=[]; applySelected(); toskyEl.style.display="none"; }
 }
 addEventListener("hashchange",applyHash);
 applyHash();
