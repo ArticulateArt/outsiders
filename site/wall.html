@@ -65,11 +65,11 @@
     padding:60px 24px;max-width:40ch;margin:0 auto}
 
   /* ─── bottom-corner links, matching the constellation's vocabulary ─── */
-  #foot{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:center;
-    gap:22px;padding:12px 14px calc(12px + env(safe-area-inset-bottom));
-    background:linear-gradient(transparent,rgba(6,8,11,.9) 40%);pointer-events:none}
-  #foot span{pointer-events:auto;font-style:italic;font-size:12.5px;color:rgba(194,203,234,.55);
-    text-shadow:0 1px 10px #000}
+  #foot{position:fixed;left:0;right:0;bottom:14px;z-index:5;display:flex;justify-content:center;
+    gap:22px;padding:0 14px calc(env(safe-area-inset-bottom));pointer-events:none}
+  #foot span{pointer-events:auto;cursor:pointer;user-select:none;font-style:italic;font-size:12.5px;
+    color:rgba(205,211,221,.85);background:rgba(6,8,11,.62);border-radius:999px;padding:7px 15px;
+    backdrop-filter:blur(4px);text-shadow:0 1px 10px #000;transition:color .25s ease}
   #foot span:active{color:#fff}
 
   /* ─── the lightbox — same visual language as immersive.html's bloom, stacked single-column ─── */
