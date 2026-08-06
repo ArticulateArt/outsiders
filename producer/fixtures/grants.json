@@ -12,6 +12,16 @@
    "ofRecord": "Articulate",
    "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
    "actor": "Articulate",
+   "targetId": "b0c4be70-59b2-4f39-a6fe-f03f90256f21",
+   "target": "dougfriesen",
+   "rating": 17000,
+   "at": "2026-08-06T12:03:47.000Z"
+  },
+  {
+   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "ofRecord": "Articulate",
+   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "actor": "Articulate",
    "targetId": "83ab8521-8f10-4a4b-b5f5-1b563cd76b0a",
    "target": "sariture",
    "rating": 2000,
@@ -66,16 +76,6 @@
    "target": "dsanchesGM",
    "rating": 17000,
    "at": "2026-07-29T11:18:47.000Z"
-  },
-  {
-   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "ofRecord": "Articulate",
-   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "actor": "Articulate",
-   "targetId": "b0c4be70-59b2-4f39-a6fe-f03f90256f21",
-   "target": "dougfriesen",
-   "rating": 16000,
-   "at": "2026-07-13T13:13:56.000Z"
   },
   {
    "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
