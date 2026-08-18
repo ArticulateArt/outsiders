@@ -12,10 +12,20 @@
    "ofRecord": "Articulate",
    "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
    "actor": "Articulate",
+   "targetId": "34351997-1666-4fd5-93c4-464e120bd25d",
+   "target": "serc",
+   "rating": 4000,
+   "at": "2026-08-18T12:30:52.000Z"
+  },
+  {
+   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "ofRecord": "Articulate",
+   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "actor": "Articulate",
    "targetId": "231b110b-57f5-442b-8030-9334a6ed56b6",
    "target": "dsanchesGM",
-   "rating": 18000,
-   "at": "2026-08-16T01:14:38.000Z"
+   "rating": 19000,
+   "at": "2026-08-18T08:44:23.000Z"
   },
   {
    "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
@@ -146,16 +156,6 @@
    "target": "Rocketgirl",
    "rating": 2000,
    "at": "2026-06-12T06:14:06.000Z"
-  },
-  {
-   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "ofRecord": "Articulate",
-   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "actor": "Articulate",
-   "targetId": "34351997-1666-4fd5-93c4-464e120bd25d",
-   "target": "serc",
-   "rating": 3000,
-   "at": "2026-06-12T06:13:40.000Z"
   },
   {
    "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
