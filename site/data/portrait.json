@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-22",
+ "generated": "2026-08-23",
  "source_wave": "815542b5-e8a5-4380-b825-5823a91c4c71",
  "note": "Witnessed via :outsiders: by someone inside the chain of trust rooted in Articulate (up to 2 grants of OUTSIDERS Grant Rep from him). Lenient detection: reaction on drop / on reply / typed reply. review=true → attribution to verify. Image-less (X-link-only) submissions excluded.",
  "works": [
@@ -2069,6 +2069,20 @@
    "full": "Gm\n\nI took a photo of one of my NFTs\n\nIn front of the Moulin Rouge, a very touristic site, hoping that my work will not be overshadowed\n\nMinted https://x.com/asaarte/status/2041899486713086155?s=46&t=GRCmIVjWNWT7fep3sJtzVg",
    "nx": 0.5792,
    "ny": 0.8182,
+   "review": false
+  },
+  {
+   "drop": "de05eb97-05a0-4929-9eed-41ece1b15e38",
+   "makers": [
+    "EmptySoulPrime"
+   ],
+   "witnesses": [
+    "Articulate"
+   ],
+   "img": "https://d3lqz0a4bldqgf.cloudfront.net/drops/author_e3d0a02a-4d95-484e-80cc-6db0aa9b2125/4662be13-52ed-464d-86c7-5245c26265ec/e2.png",
+   "full": "Event by @Artcrush \n\n\nRomania Craiova Romania \n\nRomania Bucharest \n\n\nWith the help of @[NONE32X32] @ArtBeesGallery",
+   "nx": 0.8064,
+   "ny": 0.791,
    "review": false
   },
   {
