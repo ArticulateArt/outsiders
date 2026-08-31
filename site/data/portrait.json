@@ -2184,6 +2184,20 @@
    "review": false
   },
   {
+   "drop": "e7d07092-0dd0-4c03-9b23-e7bb4a1f5d09",
+   "makers": [
+    "Paradigmstories"
+   ],
+   "witnesses": [
+    "Articulate"
+   ],
+   "img": "https://d3lqz0a4bldqgf.cloudfront.net/drops/author_caa10b81-aff4-4a03-8e84-fa5ea45bad43/df525e90-f3b3-4c65-a888-3e1831204a09/IMG-4393.jpeg",
+   "full": "Gmeme",
+   "nx": 0.4651,
+   "ny": 0.1313,
+   "review": false
+  },
+  {
    "drop": "e87ab7d1-287f-4880-8343-432482ba6597",
    "makers": [
     "dougfriesen"
@@ -2380,6 +2394,20 @@
    "review": false
   },
   {
+   "drop": "f6020ba6-de09-4056-8cc8-94cd8505cc11",
+   "makers": [
+    "Articulate"
+   ],
+   "witnesses": [
+    "Articulate"
+   ],
+   "img": "https://d3lqz0a4bldqgf.cloudfront.net/drops/author_d084ab7b-a9c8-4dff-97d5-42bacd035574/265b0d96-e812-44f9-9a55-4d2ed14404fc/00-A7C00365-Plinth-with-Flame-edited-6-no-light.jpeg",
+   "full": "Happy Monday everyone 🔥",
+   "nx": 0.134,
+   "ny": 0.1546,
+   "review": true
+  },
+  {
    "drop": "f8d3c869-7118-4e81-b22a-63724a73a6f4",
    "makers": [
     "Articulate"
@@ -2390,7 +2418,7 @@
    "img": "https://d3lqz0a4bldqgf.cloudfront.net/drops/author_d084ab7b-a9c8-4dff-97d5-42bacd035574/f03576f1-defe-4efe-8b9c-ea3ac9f30979/Screenshot-2026-05-03-at-9-28-32-pm.jpg",
    "full": "",
    "nx": 0.08,
-   "ny": 0.1813,
+   "ny": 0.1569,
    "review": true
   },
   {
