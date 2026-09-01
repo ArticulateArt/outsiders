@@ -12,6 +12,16 @@
    "ofRecord": "Articulate",
    "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
    "actor": "Articulate",
+   "targetId": "e057370d-3eb4-11ef-9d82-029a0e4b6159",
+   "target": "yudho",
+   "rating": 5000,
+   "at": "2026-09-01T11:07:13.000Z"
+  },
+  {
+   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "ofRecord": "Articulate",
+   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "actor": "Articulate",
    "targetId": "caa10b81-aff4-4a03-8e84-fa5ea45bad43",
    "target": "Paradigmstories",
    "rating": 8000,
