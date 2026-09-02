@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-01",
+ "generated": "2026-09-02",
  "source_wave": "815542b5-e8a5-4380-b825-5823a91c4c71",
  "note": "Witnessed via :outsiders: by someone inside the chain of trust rooted in Articulate (up to 2 grants of OUTSIDERS Grant Rep from him). Lenient detection: reaction on drop / on reply / typed reply. review=true → attribution to verify. Image-less (X-link-only) submissions excluded.",
  "works": [
@@ -2016,6 +2016,20 @@
    "review": false
   },
   {
+   "drop": "d19b9bd3-5ce1-4cd5-b099-e07c030b1237",
+   "makers": [
+    "Paradigmstories"
+   ],
+   "witnesses": [
+    "Articulate"
+   ],
+   "img": "https://d3lqz0a4bldqgf.cloudfront.net/drops/author_caa10b81-aff4-4a03-8e84-fa5ea45bad43/e59eb21b-74e3-4f46-bdf8-7d70bee98b84/IMG-4427.jpeg",
+   "full": "Gmeme",
+   "nx": 0.3999,
+   "ny": 0.1921,
+   "review": false
+  },
+  {
    "drop": "d37d602f-3e03-48ae-94c3-ea3401fc9023",
    "makers": [
     "meysvm"
@@ -2193,8 +2207,8 @@
    ],
    "img": "https://d3lqz0a4bldqgf.cloudfront.net/drops/author_caa10b81-aff4-4a03-8e84-fa5ea45bad43/df525e90-f3b3-4c65-a888-3e1831204a09/IMG-4393.jpeg",
    "full": "Gmeme",
-   "nx": 0.4651,
-   "ny": 0.1313,
+   "nx": 0.4748,
+   "ny": 0.1193,
    "review": false
   },
   {
