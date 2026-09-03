@@ -12,6 +12,16 @@
    "ofRecord": "Articulate",
    "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
    "actor": "Articulate",
+   "targetId": "b14d609a-104f-4add-9d8d-13b41515b17a",
+   "target": "MdYaqub",
+   "rating": 3000,
+   "at": "2026-09-03T13:05:48.000Z"
+  },
+  {
+   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "ofRecord": "Articulate",
+   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "actor": "Articulate",
    "targetId": "e057370d-3eb4-11ef-9d82-029a0e4b6159",
    "target": "yudho",
    "rating": 5000,
@@ -26,16 +36,6 @@
    "target": "Paradigmstories",
    "rating": 8000,
    "at": "2026-08-31T13:14:45.000Z"
-  },
-  {
-   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "ofRecord": "Articulate",
-   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "actor": "Articulate",
-   "targetId": "b14d609a-104f-4add-9d8d-13b41515b17a",
-   "target": "MdYaqub",
-   "rating": 1000,
-   "at": "2026-08-24T08:31:08.000Z"
   },
   {
    "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
