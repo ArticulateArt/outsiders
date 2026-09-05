@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-04",
+ "generated": "2026-09-05",
  "source_wave": "815542b5-e8a5-4380-b825-5823a91c4c71",
  "note": "Witnessed via :outsiders: by someone inside the chain of trust rooted in Articulate (up to 2 grants of OUTSIDERS Grant Rep from him). Lenient detection: reaction on drop / on reply / typed reply. review=true → attribution to verify. Image-less (X-link-only) submissions excluded.",
  "works": [
@@ -765,6 +765,20 @@
    "nx": 0.92,
    "ny": 0.08,
    "review": true
+  },
+  {
+   "drop": "57baf0d1-a934-4926-9d23-16108342bd85",
+   "makers": [
+    "GlassCrown"
+   ],
+   "witnesses": [
+    "Articulate"
+   ],
+   "img": "https://d3lqz0a4bldqgf.cloudfront.net/drops/author_d084ab7b-a9c8-4dff-97d5-42bacd035574/47fe9b3f-7ebb-4301-9f4d-0941e46f4245/IMG-7075.jpeg",
+   "full": "Amazing share @[GlassCrown]",
+   "nx": 0.5394,
+   "ny": 0.3129,
+   "review": false
   },
   {
    "drop": "57d1f88a-9537-4d37-bfc0-baf0f6ddbe2d",
@@ -1604,7 +1618,8 @@
     "nicedayJULES"
    ],
    "witnesses": [
-    "Articulate"
+    "Articulate",
+    "Beam"
    ],
    "img": "https://d3lqz0a4bldqgf.cloudfront.net/drops/author_d084ab7b-a9c8-4dff-97d5-42bacd035574/fe51b1d7-0dfc-42c4-923a-7b8b72f3e7ad/IMG-5968.jpeg",
    "full": "Another share from the incredible Marfa 2025 installation by @[nicedayJULES]\n\n\nOUTSIDERS is a celebration of ANY method of bringing our NFTs outside, and we specifically do not offer more Rep for bigger efforts - we are all equal in the task of sharing.\n\n\nDespite that, it’s undoubtedly inspiring to see people who commit so much time, energy and care to doing this for their own work in such a significant way\n\n\nBravo and thank you Jules - Rep incoming!",
@@ -2055,6 +2070,20 @@
    "full": "Hi frens of Outsiders\n\n This old work  NFt done in 2024\n\nIn a style like Andy Warhol sold \n\nAt zero.one \n\nI thought it would be appropriate to put it with this ad from a luxury brand in the same colors as mine and with similar marketing ideas as this art icon.",
    "nx": 0.5398,
    "ny": 0.7007,
+   "review": false
+  },
+  {
+   "drop": "d9d8915f-92bc-48ef-a090-326d8245cb7b",
+   "makers": [
+    "Beam"
+   ],
+   "witnesses": [
+    "Articulate"
+   ],
+   "img": "https://d3lqz0a4bldqgf.cloudfront.net/drops/author_8ee039a9-93ad-4a20-96b3-d393a85e2e15/3d495247-83c1-497f-98b3-d1e1776b81ca/IMG-20260904-154616.jpg",
+   "full": "I was out sharing stickers of my art today. This work has been collected as an NFT a few months back. ✨",
+   "nx": 0.1772,
+   "ny": 0.5432,
    "review": false
   },
   {
