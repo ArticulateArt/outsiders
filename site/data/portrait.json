@@ -1459,6 +1459,20 @@
    "review": true
   },
   {
+   "drop": "9aa5839f-747c-4ee1-ae5f-6640ae7846ac",
+   "makers": [
+    "Ikba"
+   ],
+   "witnesses": [
+    "Articulate"
+   ],
+   "img": "https://d3lqz0a4bldqgf.cloudfront.net/drops/author_52941461-46fa-4800-ad6c-0d03c3640708/cbf6ced5-5a7d-46d8-9736-8e5b98b4045a/IMG-2119.jpeg",
+   "full": "GMeme outsiders ☕️",
+   "nx": 0.2386,
+   "ny": 0.4297,
+   "review": false
+  },
+  {
    "drop": "9aa694d4-e34d-4979-a380-8be4ed23398a",
    "makers": [
     "Zoku"
@@ -1524,8 +1538,8 @@
    ],
    "img": "https://d3lqz0a4bldqgf.cloudfront.net/drops/author_52941461-46fa-4800-ad6c-0d03c3640708/d2114bdb-1db4-4397-bd19-19990ffcc43b.jpeg",
    "full": "Outside with my art",
-   "nx": 0.2284,
-   "ny": 0.5001,
+   "nx": 0.2157,
+   "ny": 0.4946,
    "review": false
   },
   {
@@ -2419,8 +2433,8 @@
    ],
    "img": "https://d3lqz0a4bldqgf.cloudfront.net/drops/author_52941461-46fa-4800-ad6c-0d03c3640708/1d209496-626b-4558-aaca-bfa95d648ee7.jpeg",
    "full": "go outside!\n\nAnother outside artwork post lol, maybe I should find new spot",
-   "nx": 0.2104,
-   "ny": 0.4817,
+   "nx": 0.23,
+   "ny": 0.4845,
    "review": false
   },
   {
