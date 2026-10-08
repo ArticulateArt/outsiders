@@ -12,10 +12,60 @@
    "ofRecord": "Articulate",
    "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
    "actor": "Articulate",
+   "targetId": "ce29e80e-3037-459e-a11c-88dd00ec5895",
+   "target": "NLV",
+   "rating": 10000,
+   "at": "2026-10-08T11:44:31.000Z"
+  },
+  {
+   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "ofRecord": "Articulate",
+   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "actor": "Articulate",
+   "targetId": "83ab8521-8f10-4a4b-b5f5-1b563cd76b0a",
+   "target": "sariture",
+   "rating": 7000,
+   "at": "2026-10-08T11:44:01.000Z"
+  },
+  {
+   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "ofRecord": "Articulate",
+   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "actor": "Articulate",
+   "targetId": "b0c4be70-59b2-4f39-a6fe-f03f90256f21",
+   "target": "dougfriesen",
+   "rating": 26000,
+   "at": "2026-10-08T06:56:06.000Z"
+  },
+  {
+   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "ofRecord": "Articulate",
+   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "actor": "Articulate",
+   "targetId": "1f7683db-36e6-4ed6-a6e8-17ed2e313eee",
+   "target": "meysvm",
+   "rating": 14000,
+   "at": "2026-10-08T06:55:43.000Z"
+  },
+  {
+   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "ofRecord": "Articulate",
+   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "actor": "Articulate",
    "targetId": "caa10b81-aff4-4a03-8e84-fa5ea45bad43",
    "target": "Paradigmstories",
+   "rating": 14000,
+   "at": "2026-10-08T06:55:16.000Z"
+  },
+  {
+   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "ofRecord": "Articulate",
+   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "actor": "Articulate",
+   "targetId": "17f3a62c-f593-4c6f-bd19-383de3085eef",
+   "target": "PIRANSI",
    "rating": 9000,
-   "at": "2026-10-01T11:17:26.000Z"
+   "at": "2026-10-08T06:54:34.000Z"
   },
   {
    "ofRecordId": "5edef420-5bdf-4fbd-b2b1-872b2eda9414",
@@ -26,16 +76,6 @@
    "target": "AEZY",
    "rating": 395,
    "at": "2026-09-27T00:28:40.000Z"
-  },
-  {
-   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "ofRecord": "Articulate",
-   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "actor": "Articulate",
-   "targetId": "b0c4be70-59b2-4f39-a6fe-f03f90256f21",
-   "target": "dougfriesen",
-   "rating": 21000,
-   "at": "2026-09-08T09:12:48.000Z"
   },
   {
    "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
@@ -126,16 +166,6 @@
    "target": "dsanchesGM",
    "rating": 19000,
    "at": "2026-08-18T08:44:23.000Z"
-  },
-  {
-   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "ofRecord": "Articulate",
-   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "actor": "Articulate",
-   "targetId": "83ab8521-8f10-4a4b-b5f5-1b563cd76b0a",
-   "target": "sariture",
-   "rating": 2000,
-   "at": "2026-08-04T14:07:00.000Z"
   },
   {
    "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
@@ -236,16 +266,6 @@
    "target": "Rocketgirl",
    "rating": 2000,
    "at": "2026-06-12T06:14:06.000Z"
-  },
-  {
-   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "ofRecord": "Articulate",
-   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "actor": "Articulate",
-   "targetId": "17f3a62c-f593-4c6f-bd19-383de3085eef",
-   "target": "PIRANSI",
-   "rating": 4000,
-   "at": "2026-06-12T06:11:04.000Z"
   },
   {
    "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
@@ -592,16 +612,6 @@
    "ofRecord": "Articulate",
    "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
    "actor": "Articulate",
-   "targetId": "1f7683db-36e6-4ed6-a6e8-17ed2e313eee",
-   "target": "meysvm",
-   "rating": 9000,
-   "at": "2025-12-06T09:53:16.000Z"
-  },
-  {
-   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "ofRecord": "Articulate",
-   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "actor": "Articulate",
    "targetId": "0f82f79b-87b4-11ee-9d82-029a0e4b6159",
    "target": "intrepid",
    "rating": 3000,
@@ -626,16 +636,6 @@
    "target": "LeonFaesulis",
    "rating": 1000,
    "at": "2025-09-24T05:56:19.000Z"
-  },
-  {
-   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "ofRecord": "Articulate",
-   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "actor": "Articulate",
-   "targetId": "ce29e80e-3037-459e-a11c-88dd00ec5895",
-   "target": "NLV",
-   "rating": 5000,
-   "at": "2025-09-20T08:40:25.000Z"
   },
   {
    "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
