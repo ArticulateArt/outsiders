@@ -31,10 +31,8 @@
      - No qualified :outsiders: witness → excluded (not removed; just uncounted).
 
    OUTPUT (schema is FROZEN — both immersive.html & wall.html read it)
-     work = { drop, makers[], witnesses[], img, full, nx, ny, review, added }
-     added = ISO time the work FIRST joined the wall. Carried forward from the
-     previous bake; new works get "now"; works predating the field are
-     backfilled from fixtures/added.json (first appearance in git history).
+     work = { drop, makers[], witnesses[], img, full, nx, ny, review, posted }
+     posted = ISO time the photo drop was posted on 6529 (the API's created_at).
      ../site/data/portrait.json   and   ../site/data/portrait.js  (window.PORTRAIT=…)
 
    RUN
@@ -91,7 +89,6 @@ const FIX_DIR = path.join(HERE, "fixtures");
 const FIX_GRANTS = path.join(FIX_DIR, "grants.json");
 const FIX_DROPS = path.join(FIX_DIR, "drops.sample.json");
 const FIX_OVERRIDES = path.join(FIX_DIR, "overrides.json");
-const FIX_ADDED = path.join(FIX_DIR, "added.json"); // one-time backfill: dropId -> ISO first seen
 const SITE_DATA = path.join(HERE, "..", "site", "data");
 const OUT_JSON = path.join(SITE_DATA, "portrait.json");
 const OUT_JS = path.join(SITE_DATA, "portrait.js");
@@ -348,16 +345,10 @@ async function build() {
       full: dropText(drop),
       nx: 0, ny: 0,
       review: !!review,
+      posted: drop.created_at ? new Date(drop.created_at).toISOString() : null,
     };
     out.push(w);
   }
-  // when each work first joined the wall: keep what the last bake knew, else
-  // the git-history backfill, else this moment (it is new).
-  const prevAdded = new Map(baseline.filter((w) => w.added).map((w) => [w.drop, w.added]));
-  const backfill = fs.existsSync(FIX_ADDED) ? JSON.parse(fs.readFileSync(FIX_ADDED, "utf8")) : {};
-  const nowIso = new Date().toISOString();
-  for (const w of out) w.added = prevAdded.get(w.drop) || backfill[w.drop] || nowIso;
-
   // founder hand-curation: apply overrides after attribution, before layout
   // (so nx/ny reflect the corrected maker). makers:[] => an outsider.
   const overrides = fs.existsSync(FIX_OVERRIDES)

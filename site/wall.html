@@ -208,16 +208,15 @@ function makerLabel(w){ var m=w.makers;
 var d=window.PORTRAIT;
 if(!d||!d.works){ document.getElementById("loading").textContent="portrait data missing (data/portrait.js)"; return; }
 var WORKS=d.works;
-/* newest first: when it joined the wall, then 6529 post order (a whole batch can share a
-   timestamp — the first bake, or several works marked between two checks) */
+/* newest first: by when the photo was posted on 6529, then post order as a tiebreak */
 function serialOf(w){ return DROP_SERIALS[w.drop]||0; }
 function byRecent(a,b){
-  var x=a.added||"", y=b.added||"";
+  var x=a.posted||"", y=b.posted||"";
   if(x!==y) return x<y?1:-1;
   return serialOf(b)-serialOf(a);
 }
 var MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-function whenLabel(w){ var t=w.added&&new Date(w.added); if(!t||isNaN(t)) return "";
+function whenLabel(w){ var t=w.posted&&new Date(w.posted); if(!t||isNaN(t)) return "";
   return MONTHS[t.getMonth()]+" "+t.getDate(); }
 function relatedTo(w,k){ return WORKS.filter(function(x){ return x!==w && (k.test(w,x)||k.test(x,w)); }); }
 
