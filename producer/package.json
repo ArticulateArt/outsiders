@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "description": "Producer-only tooling (thumbnails). Kept apart from the root package.json so Vercel's deploy never installs it.",
+  "dependencies": {
+    "sharp": "^0.34.0"
+  }
+}

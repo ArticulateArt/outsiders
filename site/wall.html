@@ -35,6 +35,14 @@
   #ac .it .who{font-style:normal;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-left:9px}
   #ac .it:active,#ac .it.sel{background:rgba(195,189,142,.14);color:#fff}
 
+  /* ─── sort: one quiet toggle under the search ─── */
+  #sortrow{display:flex;justify-content:center;margin:14px 0 0;padding:0 18px}
+  #sortbtn{font-family:var(--serif);font-style:italic;font-size:13.5px;color:rgba(205,211,221,.85);
+    background:transparent;border:1px solid rgba(195,189,142,.3);border-radius:999px;padding:7px 16px;
+    cursor:pointer;user-select:none;transition:color .25s ease,border-color .25s ease,background .25s ease}
+  #sortbtn:hover{border-color:rgba(195,189,142,.7);color:#fff}
+  #sortbtn[aria-pressed="true"]{color:#fff;border-color:rgba(212,190,120,.6);background:rgba(212,190,120,.12)}
+
   /* ─── the pills: current filters, dismissible — more than one can stack (search adds) ─── */
   #pillwrap{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:0 18px;
     min-height:0;transition:min-height .25s ease}
@@ -52,7 +60,15 @@
   @media(min-width:900px){ #grid,#ggrid{columns:4;column-gap:16px} }
   .tl{break-inside:avoid;margin:0 0 12px;position:relative;border-radius:8px;overflow:hidden;
     background:#11161b;border:1px solid rgba(205,211,221,.1)}
-  .tl img{width:100%;display:block}
+  .tl img{width:100%;height:auto;display:block}
+  .tl .nm .when{font-style:normal;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--a-khaki);opacity:.85;margin-left:8px}
+  /* most-recent view: tiles are dealt across the columns, so reading order runs
+     left-to-right, row by row, newest first (CSS columns would run down each column) */
+  #grid.rr{columns:auto;display:flex;gap:12px;align-items:flex-start}
+  @media(min-width:600px){ #grid.rr{gap:14px} }
+  @media(min-width:900px){ #grid.rr{gap:16px} }
+  #grid.rr .col{flex:1 1 0;min-width:0}
   .tl .nm{position:absolute;left:0;right:0;bottom:0;padding:16px 9px 7px;font-style:italic;
     font-size:12px;color:#fff;background:linear-gradient(transparent,rgba(6,8,11,.9));
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -138,6 +154,7 @@
     <input id="search" type="text" autocomplete="off" spellcheck="false" placeholder="find a name…" aria-label="find a name">
     <div id="ac"></div>
   </div>
+  <div id="sortrow"><button id="sortbtn" type="button" aria-pressed="false">✦&nbsp; most recently added</button></div>
 </div>
 <span class="bclose" id="tosky" style="display:none">←&nbsp; back to the constellation</span>
 <div id="pillwrap"><span class="pill" id="pill"></span></div>
@@ -170,6 +187,7 @@
 <!-- baked data (plain scripts, same contract immersive.html and the producer share) -->
 <script src="data/portrait.js"></script>
 <script src="data/serials.js"></script>
+<script src="data/thumbs.js"></script>
 <script>
 (function(){
 "use strict";
@@ -178,6 +196,10 @@ var WAVE_ID="815542b5-e8a5-4380-b825-5823a91c4c71";
 var DROP_SERIALS=window.DROP_SERIALS||{};
 function dropUrl(w){ var s=w&&DROP_SERIALS[w.drop];
   return s? "https://6529.io/my-stream?wave="+WAVE_ID+"&serialNo="+s : "https://6529.io"; }
+/* tiles use the small local copy when the producer has made one (data/thumbs.js),
+   else the original from 6529. The detail view and zoom always show the original. */
+var THUMBS=window.THUMBS||{};
+function thumbSrc(w){ return THUMBS[w.drop]? "thumbs/"+w.drop+".webp" : w.img; }
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
 function hash(s){ var h=0; for(var i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; return h; }
 function makerLabel(w){ var m=w.makers;
@@ -186,6 +208,17 @@ function makerLabel(w){ var m=w.makers;
 var d=window.PORTRAIT;
 if(!d||!d.works){ document.getElementById("loading").textContent="portrait data missing (data/portrait.js)"; return; }
 var WORKS=d.works;
+/* newest first: when it joined the wall, then 6529 post order (a whole batch can share a
+   timestamp — the first bake, or several works marked between two checks) */
+function serialOf(w){ return DROP_SERIALS[w.drop]||0; }
+function byRecent(a,b){
+  var x=a.added||"", y=b.added||"";
+  if(x!==y) return x<y?1:-1;
+  return serialOf(b)-serialOf(a);
+}
+var MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function whenLabel(w){ var t=w.added&&new Date(w.added); if(!t||isNaN(t)) return "";
+  return MONTHS[t.getMonth()]+" "+t.getDate(); }
 function relatedTo(w,k){ return WORKS.filter(function(x){ return x!==w && (k.test(w,x)||k.test(x,w)); }); }
 
 /* same three kinds, same wording, as site/immersive.html's KINDS — the founder already
@@ -219,18 +252,34 @@ var currentSet=SHUFFLED, currentLabel=null;
    grid alongside whatever was already showing, with its own removable pill. */
 var selected=[];
 
-function tileHtml(w){
-  var kept=isKept(w);
+function tileHtml(w,showWhen){
+  var kept=isKept(w), t=THUMBS[w.drop], when=showWhen?whenLabel(w):"";
   return '<div class="tl" data-d="'+w.drop+'">'
-    +'<img loading="lazy" referrerpolicy="no-referrer" src="'+w.img+'" alt="">'
+    +'<img loading="lazy" referrerpolicy="no-referrer" src="'+thumbSrc(w)+'"'
+    +(t?' width="'+t[0]+'" height="'+t[1]+'" onerror="this.onerror=null;this.removeAttribute(\'width\');this.removeAttribute(\'height\');this.src=\''+w.img+'\'"':'')
+    +' alt="">'
     +'<span class="bk'+(kept?" on":"")+'" data-bk="1">'+(kept?"⬢":"⬡")+'</span>'
-    +'<span class="nm">'+esc(makerLabel(w))+'</span></div>';
+    +'<span class="nm">'+esc(makerLabel(w))+(when?'<span class="when">'+when+'</span>':'')+'</span></div>';
 }
+/* most-recent mode: newest first, dealt round-robin into as many columns as the CSS
+   would have used, so the eye reads across rows */
+var recentOn=false;
+function colCount(){ var w=window.innerWidth; return w>=900?4:w>=600?3:2; }
+var lastCols=0;
 function renderTiles(works){
   if(!works.length){ gridEl.style.display="none"; emptyEl.style.display="block";
     emptyEl.textContent="nothing along that thread yet."; return; }
   gridEl.style.display=""; emptyEl.style.display="none";
-  gridEl.innerHTML=works.map(tileHtml).join("");
+  if(recentOn){
+    var sorted=works.slice().sort(byRecent), n=colCount(), cols=[];
+    for(var c=0;c<n;c++) cols.push("");
+    sorted.forEach(function(w,i){ cols[i%n]+=tileHtml(w,true); });
+    gridEl.className="rr"; lastCols=n;
+    gridEl.innerHTML=cols.map(function(h){ return '<div class="col">'+h+'</div>'; }).join("");
+  } else {
+    gridEl.className="";
+    gridEl.innerHTML=works.map(function(w){ return tileHtml(w,false); }).join("");
+  }
   gridEl.querySelectorAll(".tl").forEach(function(el){
     el.addEventListener("click",function(e){
       if(e.target.closest("[data-bk]")) return;
@@ -253,6 +302,12 @@ function renderPills(items){
     el.addEventListener("click",function(){ items[+el.dataset.i].onX(); });
   });
 }
+var sortBtn=document.getElementById("sortbtn");
+sortBtn.addEventListener("click",function(){
+  recentOn=!recentOn; sortBtn.setAttribute("aria-pressed",recentOn?"true":"false");
+  renderTiles(currentSet); window.scrollTo(0,0);
+});
+addEventListener("resize",function(){ if(recentOn && colCount()!==lastCols) renderTiles(currentSet); });
 /* a "replace" navigation (default view, a thread's related works, the constellation
    deep-link) — one label, one pill, dismiss returns to the full shuffled wall. */
 function renderGrid(works,label){
@@ -325,7 +380,7 @@ var galEl=document.getElementById("gallery"), ggrid=document.getElementById("ggr
 function renderGallery(){
   var kept=KEPT.map(function(dd){ return WORKS.find(function(w){ return w.drop===dd; }); }).filter(Boolean);
   ggrid.innerHTML = kept.length
-    ? kept.map(tileHtml).join("")
+    ? kept.map(function(w){ return tileHtml(w,false); }).join("")
     : '<p class="gsub" style="font-size:14px;max-width:40ch">nothing here yet — when you meet a work you love, choose <i>⬡ keep</i>, or tap the ⬡ on any tile (it turns ⬢), and it will wait for you here.</p>';
   ggrid.querySelectorAll(".tl").forEach(function(el){
     el.addEventListener("click",function(e){

@@ -61,6 +61,14 @@ jobs:
       - name: Top up any missing 6529 permalinks
         run: node producer/bake-serials.js
 
+      # Small local copies of each work's image, so the wall does not pull the
+      # full-size originals from 6529's CDN. Only new works are fetched; a failed
+      # download leaves that tile on the original, it never fails the run.
+      - name: Make thumbnails for any new works
+        run: |
+          npm install --prefix producer --no-audit --no-fund
+          node producer/thumbs.js
+
       - name: Say what changed
         run: |
           {
@@ -88,7 +96,7 @@ jobs:
           fi
           git config user.name  "the producer"
           git config user.email "producer@outsiders.articulate.art"
-          git add site/data producer/fixtures/grants.json
+          git add -A site/data site/thumbs producer/fixtures/grants.json
           # The subject line is what the founder reads in the repo's history, so
           # it says who arrived, not "chore(data): update".
           ADDED=$(tr '\r' '\n' < bake.log | grep -cE '^  \+ ' || true)
