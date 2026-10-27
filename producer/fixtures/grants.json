@@ -12,6 +12,16 @@
    "ofRecord": "Articulate",
    "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
    "actor": "Articulate",
+   "targetId": "acd7e6fb-874c-42a9-b41b-5b9ce39ca5a5",
+   "target": "Asaart",
+   "rating": 20000,
+   "at": "2026-10-27T10:32:15.000Z"
+  },
+  {
+   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "ofRecord": "Articulate",
+   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
+   "actor": "Articulate",
    "targetId": "0f82dedc-87b4-11ee-9d82-029a0e4b6159",
    "target": "aventurine",
    "rating": 2000,
@@ -36,16 +46,6 @@
    "target": "dsanchesGM",
    "rating": 20000,
    "at": "2026-10-23T06:31:38.000Z"
-  },
-  {
-   "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "ofRecord": "Articulate",
-   "actorId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
-   "actor": "Articulate",
-   "targetId": "acd7e6fb-874c-42a9-b41b-5b9ce39ca5a5",
-   "target": "Asaart",
-   "rating": 18000,
-   "at": "2026-10-19T07:19:29.000Z"
   },
   {
    "ofRecordId": "d084ab7b-a9c8-4dff-97d5-42bacd035574",
