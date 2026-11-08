@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-07",
+ "generated": "2026-11-08",
  "source_wave": "815542b5-e8a5-4380-b825-5823a91c4c71",
  "note": "Witnessed via :outsiders: by someone inside the chain of trust rooted in Articulate (up to 2 grants of OUTSIDERS Grant Rep from him). Lenient detection: reaction on drop / on reply / typed reply. review=true → attribution to verify. Image-less (X-link-only) submissions excluded.",
  "works": [
@@ -2659,6 +2659,21 @@
    "ny": 0.6159,
    "review": false,
    "posted": "2026-03-16T12:41:48.980Z"
+  },
+  {
+   "drop": "e4163598-443c-43ac-b7e1-98f25ff586a5",
+   "makers": [
+    "fercaggiano"
+   ],
+   "witnesses": [
+    "Articulate"
+   ],
+   "img": "https://d3lqz0a4bldqgf.cloudfront.net/drops/4317613b-1836-431a-b268-37091138c3f5/IMG-9820.jpeg",
+   "full": "",
+   "nx": 0.08,
+   "ny": 0.465,
+   "review": false,
+   "posted": "2026-11-06T14:35:23.522Z"
   },
   {
    "drop": "e53462ab-63c2-4c4a-9e45-dc0c545cdaf7",
